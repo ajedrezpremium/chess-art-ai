@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 const SYSTEM_PROMPT_ES = `Eres el guía experto de "Chess Art & AI Academy". Dominas tanto la teoría, historia y táctica del ajedrez (aperturas, combinaciones clásicas, jugadores históricos) como el análisis artístico de las ilustraciones de la serie "Top 100 Combinaciones de la Historia".
 
@@ -67,12 +67,20 @@ export async function POST(req: NextRequest) {
       })),
     ];
 
-    const model = process.env.OPENROUTER_API_KEY
-      ? openai('openrouter/auto', {
-          baseURL: 'https://openrouter.ai/api/v1',
-          apiKey: process.env.OPENROUTER_API_KEY,
-        })
-      : openai('gpt-4o-mini');
+    // Configure model based on available API key
+    let model;
+    if (process.env.OPENROUTER_API_KEY) {
+      const openrouter = createOpenAI({
+        baseURL: 'https://openrouter.ai/api/v1',
+        apiKey: process.env.OPENROUTER_API_KEY,
+      });
+      model = openrouter('openrouter/auto');
+    } else if (process.env.OPENAI_API_KEY) {
+      const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      model = openai('gpt-4o-mini');
+    } else {
+      throw new Error('No AI API key configured');
+    }
 
     const result = streamText({
       model,
