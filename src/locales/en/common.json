@@ -1,0 +1,99 @@
+{
+  "nav": {
+    "home": "Home",
+    "top100": "Top 100",
+    "pgn": "PGN Viewer",
+    "about": "About",
+    "play": "Play",
+    "train": "Train"
+  },
+  "hero": {
+    "title1": "CHESS.",
+    "title2": "ART.",
+    "title3": "INTELLIGENCE.",
+    "subtitle": "Discover the greatest chess combinations in history through art, interactive chess and artificial intelligence.",
+    "ctaPrimary": "EXPLORE TOP 100",
+    "ctaSecondary": "PLAY CHESS"
+  },
+  "combination": {
+    "number": "Combination",
+    "title": "Title",
+    "players": "Players",
+    "event": "Event",
+    "year": "Year",
+    "difficulty": "Difficulty",
+    "result": "Result",
+    "opening": "Opening",
+    "category": "Category",
+    "description": "Description",
+    "artwork": "Artwork",
+    "board": "Board",
+    "solution": "Solution",
+    "analysis": "Analysis",
+    "aiExplanation": "AI Explanation",
+    "related": "Related Combinations",
+    "play": "PLAY",
+    "solve": "SOLVE",
+    "reveal": "REVEAL",
+    "analyze": "ANALYZE"
+  },
+  "difficulty": {
+    "Beginner": "Beginner",
+    "Easy": "Easy",
+    "Intermediate": "Intermediate",
+    "Advanced": "Advanced",
+    "Expert": "Expert",
+    "Master": "Master"
+  },
+  "gallery": {
+    "title": "TOP 100 COMBINATIONS",
+    "subtitle": "The most brilliant combinations in chess history, artistically illustrated",
+    "search": "Search combinations...",
+    "filter": "Filters",
+    "filterByPlayer": "By player",
+    "filterByYear": "By year",
+    "filterByDifficulty": "By difficulty",
+    "filterByCategory": "By category",
+    "noResults": "No combinations found",
+    "loadMore": "Load more"
+  },
+  "pgnViewer": {
+    "title": "PGN Viewer",
+    "subtitle": "Analyze any game by pasting its PGN",
+    "loadPgn": "Load PGN",
+    "clear": "Clear",
+    "controls": "Controls",
+    "moveList": "Move List",
+    "copyPgn": "Copy PGN",
+    "copyFen": "Copy FEN",
+    "flipBoard": "Flip Board",
+    "coordinates": "Coordinates"
+  },
+  "artist": {
+    "name": "Pablo Iglesias",
+    "title": "Top 100 Series Artist",
+    "bio": "Visual artist specialized in the intersection of chess and art. His 'Top 100 Combinations in History' series transforms iconic chess positions into artworks that capture the tension, sacrifice and beauty of each decisive moment.",
+    "contact": "Contact for collaborations",
+    "email": "pablo.iglesias@chessart.ai",
+    "portfolio": "View portfolio",
+    "social": "Social media"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  },
+  "ai": {
+    "title": "Chess AI",
+    "placeholder": "Ask about chess, art, or the current combination...",
+    "thinking": "Thinking...",
+    "welcome": "Hello! I'm your Chess Art & AI Academy assistant.",
+    "capabilities": "Ask me about:",
+    "chess": "♟ Chess (openings, tactics, endgames, history)",
+    "art": "🎨 Chess Art (illustrations, visual concepts)",
+    "combinations": "📖 Historical combinations from Top 100",
+    "analysis": "📊 Position and game analysis",
+    "training": "🧠 Training and exercises"
+  }
+}
