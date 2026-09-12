@@ -21,6 +21,18 @@ import type { ParsedPGN, PGNMove } from '@/types/combination';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+function normalizeFen(fen?: string): string {
+  if (!fen || typeof fen !== 'string') return DEFAULT_FEN;
+  const fields = fen.trim().split(/\s+/);
+  if (fields.length !== 6) {
+    console.warn('[PGNViewer] Invalid FEN, using default:', fen);
+    return DEFAULT_FEN;
+  }
+  return fields.join(' ');
+}
+
 interface PGNViewerProps {
   pgn?: string;
   fen?: string;
@@ -55,10 +67,10 @@ export function PGNViewer({
     if (pgn) {
       const parsed = parsePGN(pgn);
       setParsedPGN(parsed);
-      chessRef.current.load(parsed.initialFen);
+      chessRef.current.load(normalizeFen(parsed.initialFen));
       setCurrentMoveIndex(-1);
     } else if (fen || initialFen) {
-      const startFen = fen || initialFen || 'start';
+      const startFen = normalizeFen(fen || initialFen);
       chessRef.current.load(startFen);
       setParsedPGN({
         headers: {},
@@ -74,7 +86,7 @@ export function PGNViewer({
       const targetFen = currentMoveIndex === -1 
         ? parsedPGN.initialFen 
         : parsedPGN.moves[currentMoveIndex].fen;
-      chessRef.current.load(targetFen);
+      chessRef.current.load(normalizeFen(targetFen));
       onMoveChange?.(currentMoveIndex, currentMoveIndex === -1 ? null : parsedPGN.moves[currentMoveIndex]);
     }
   }, [currentMoveIndex, parsedPGN, onMoveChange]);
