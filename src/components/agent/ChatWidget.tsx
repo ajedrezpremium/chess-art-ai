@@ -26,6 +26,66 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import type { AIMessage, ChessContext } from '@/types/combination';
 
+// Type declarations for Web Speech API
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface SpeechSynthesisUtterance {
+  text: string;
+  lang: string;
+  onend: () => void;
+  onerror: (event: SpeechSynthesisErrorEvent) => void;
+}
+
+interface SpeechSynthesisErrorEvent extends Event {
+  error: string;
+}
+
+interface Window {
+  SpeechRecognition: {
+    new(): SpeechRecognition;
+  };
+  webkitSpeechRecognition: {
+    new(): SpeechRecognition;
+  };
+}
+
 const QUICK_ACTIONS = [
   { id: 'explain-position', label: 'Explicar esta posición', icon: ChessRook },
   { id: 'find-tactic', label: 'Encontrar la táctica', icon: Zap },
