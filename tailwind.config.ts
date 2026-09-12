@@ -1,0 +1,152 @@
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  darkMode: 'class',
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Chess Art & AI Academy Palette
+        'chess-bg': '#0A0A0F',
+        'chess-surface': '#14141F',
+        'chess-surface-elevated': '#1A1A2E',
+        'chess-gold': '#C9A227',
+        'chess-gold-light': '#D4B84A',
+        'chess-gold-dark': '#A8871F',
+        'chess-violet': '#6C5CE7',
+        'chess-violet-light': '#8B7CEB',
+        'chess-violet-dark': '#5A4BD8',
+        'chess-text-primary': '#F5F5F7',
+        'chess-text-secondary': '#8E8EA0',
+        'chess-text-muted': '#5A5A6E',
+        'chess-success': '#00B894',
+        'chess-success-light': '#2ED573',
+        'chess-border': '#2A2A3E',
+        'chess-border-light': '#3A3A4E',
+      },
+      fontFamily: {
+        display: ['var(--font-playfair)', 'Georgia', 'serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'JetBrains Mono', 'monospace'],
+      },
+      fontSize: {
+        'display-xl': ['clamp(3.5rem, 8vw, 6rem)', { lineHeight: '1.05', letterSpacing: '-0.03em', fontWeight: '600' }],
+        'display-lg': ['clamp(2.5rem, 6vw, 4rem)', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '500' }],
+        'display-md': ['clamp(2rem, 4vw, 3rem)', { lineHeight: '1.15', letterSpacing: '-0.01em', fontWeight: '500' }],
+        'display-sm': ['clamp(1.5rem, 3vw, 2.25rem)', { lineHeight: '1.2', fontWeight: '500' }],
+        'heading-lg': ['clamp(1.75rem, 3.5vw, 2.5rem)', { lineHeight: '1.25', fontWeight: '500' }],
+        'heading-md': ['clamp(1.25rem, 2.5vw, 1.75rem)', { lineHeight: '1.3', fontWeight: '500' }],
+        'heading-sm': ['clamp(1.125rem, 2vw, 1.375rem)', { lineHeight: '1.35', fontWeight: '500' }],
+        'body-lg': ['1.125rem', { lineHeight: '1.7', letterSpacing: '0.005em' }],
+        'body-md': ['1rem', { lineHeight: '1.65', letterSpacing: '0.005em' }],
+        'body-sm': ['0.875rem', { lineHeight: '1.6', letterSpacing: '0.01em' }],
+        'caption': ['0.8125rem', { lineHeight: '1.55', letterSpacing: '0.02em' }],
+        'overline': ['0.75rem', { lineHeight: '1.5', letterSpacing: '0.1em', textTransform: 'uppercase' }],
+      },
+      spacing: {
+        'space-px': '1px',
+        'space-0': '0',
+        'space-1': '0.25rem',
+        'space-2': '0.5rem',
+        'space-3': '0.75rem',
+        'space-4': '1rem',
+        'space-5': '1.25rem',
+        'space-6': '1.5rem',
+        'space-8': '2rem',
+        'space-10': '2.5rem',
+        'space-12': '3rem',
+        'space-16': '4rem',
+        'space-20': '5rem',
+        'space-24': '6rem',
+        'space-32': '8rem',
+      },
+      borderRadius: {
+        'radius-sm': '0.375rem',
+        'radius-md': '0.5rem',
+        'radius-lg': '0.75rem',
+        'radius-xl': '1rem',
+        'radius-2xl': '1.5rem',
+        'radius-full': '9999px',
+      },
+      boxShadow: {
+        'shadow-soft': '0 2px 8px -2px rgba(0, 0, 0, 0.3)',
+        'shadow-medium': '0 8px 24px -4px rgba(0, 0, 0, 0.4)',
+        'shadow-strong': '0 20px 40px -8px rgba(0, 0, 0, 0.5)',
+        'shadow-glow-gold': '0 0 30px -5px rgba(201, 162, 39, 0.3)',
+        'shadow-glow-violet': '0 0 30px -5px rgba(108, 92, 231, 0.3)',
+        'shadow-inner-soft': 'inset 0 2px 4px rgba(0, 0, 0, 0.2)',
+      },
+      transitionDuration: {
+        'fast': '150ms',
+        'normal': '250ms',
+        'slow': '400ms',
+        'slower': '600ms',
+      },
+      transitionTimingFunction: {
+        'ease-out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
+        'ease-spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+        'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+        'slide-in-right': 'slideInRight 0.5s ease-out forwards',
+        'slide-in-left': 'slideInLeft 0.5s ease-out forwards',
+        'scale-in': 'scaleIn 0.4s ease-out forwards',
+        'pulse-gold': 'pulseGold 3s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'shimmer': 'shimmer 2s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInDown: {
+          '0%': { opacity: '0', transform: 'translateY(-20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        pulseGold: {
+          '0%, 100%': { boxShadow: '0 0 20px -5px rgba(201, 162, 39, 0.2)' },
+          '50%': { boxShadow: '0 0 40px -5px rgba(201, 162, 39, 0.5)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'hero-pattern': 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23C9A227\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+        'mesh-gradient': 'linear-gradient(135deg, rgba(201,162,39,0.08) 0%, transparent 50%), linear-gradient(225deg, rgba(108,92,231,0.08) 0%, transparent 50%)',
+      },
+    },
+  },
+  plugins: [],
+}
+export default config

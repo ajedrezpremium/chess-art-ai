@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { CombinationCard } from './CombinationCard';
 import type { Combination } from '@/types/combination';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, ChevronDown, X, LayoutGrid, Palette, List, Sparkles } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Search, Filter, ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 
 interface CombinationGalleryProps {
   initialCombinations: Combination[];
   locale?: 'es' | 'en';
-  onLoadMore?: () => Promise<Combination[] | void>;
+  onLoadMore?: () => Promise<Combination[]>;
   hasMore?: boolean;
 }
 
@@ -31,9 +31,6 @@ export function CombinationGallery({
   const [yearFilter, setYearFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [playerFilter, setPlayerFilter] = useState('');
-  const [viewMode, setViewMode] = useState<'diagram' | 'artwork' | 'compact'>('diagram');
-  const [sortBy, setSortBy] = useState<'number' | 'year' | 'title'>('number');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,18 +48,6 @@ export function CombinationGallery({
     return matchesSearch && matchesDifficulty && matchesYear && matchesCategory && matchesPlayer;
   });
 
-  const sortedCombinations = [...filteredCombinations].sort((a, b) => {
-    let comparison = 0;
-    if (sortBy === 'number') {
-      comparison = a.number - b.number;
-    } else if (sortBy === 'year') {
-      comparison = a.year - b.year;
-    } else if (sortBy === 'title') {
-      comparison = a.title.localeCompare(b.title);
-    }
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
-
   const activeFiltersCount = [difficultyFilter, yearFilter, categoryFilter, playerFilter].filter(Boolean).length;
 
   const handleLoadMore = async () => {
@@ -71,7 +56,7 @@ export function CombinationGallery({
     try {
       const newCombinations = await onLoadMore();
       if (newCombinations && newCombinations.length > 0) {
-        setCombinations(prev => [...prev, ...newCombinations]);
+        // Don't update state here, let the parent handle it
       }
     } catch (error) {
       console.error('Error loading more:', error);
@@ -89,7 +74,7 @@ export function CombinationGallery({
   };
 
   const t = locale === 'es' ? {
-    search: 'Buscar por título o maestro...',
+    search: 'Buscar combinaciones...',
     filters: 'Filtros',
     difficulty: 'Dificultad',
     year: 'Año',
@@ -102,9 +87,9 @@ export function CombinationGallery({
     loadMore: 'Cargar más',
     showing: 'Mostrando',
     of: 'de',
-    combinations: 'obras maestras',
+    combinations: 'combinaciones',
   } : {
-    search: 'Search by title or player...',
+    search: 'Search combinations...',
     filters: 'Filters',
     difficulty: 'Difficulty',
     year: 'Year',
@@ -117,7 +102,7 @@ export function CombinationGallery({
     loadMore: 'Load more',
     showing: 'Showing',
     of: 'of',
-    combinations: 'masterpieces',
+    combinations: 'combinations',
   };
 
   const difficulties = DIFFICULTIES.map(d => ({ value: d, label: locale === 'es' ? (
@@ -129,116 +114,56 @@ export function CombinationGallery({
   ) : d }));
 
   const years = [...new Set(combinations.map(c => c.year))].sort((a, b) => b - a);
-  const categories = Array.from(new Set(combinations.map(c => c.category).filter((cat): cat is string => Boolean(cat)))).sort();
+  const categories = [...new Set(combinations.map(c => c.category).filter(Boolean))].sort();
 
   return (
     <div className="space-y-6">
-      {/* Top Search & View Selector */}
+      {/* Search and Filter Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chess-text-muted" />
           <Input
             placeholder={t.search}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/60 border-slate-800 focus:border-blue-500 rounded-xl"
+            className="pl-12 bg-chess-surface/50 border-chess-border/50 focus:border-chess-gold focus:ring-chess-gold/20"
           />
         </div>
         
         <div className="flex items-center gap-2 flex-wrap">
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-slate-900/80 border border-slate-800 rounded-xl p-1 gap-1">
-            <button
-              onClick={() => setViewMode('diagram')}
-              className={cn('px-2.5 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all', viewMode === 'diagram' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white')}
-              title="Vista Diagrama Táctico"
-            >
-              <LayoutGrid className="h-3.5 w-3.5" />
-              <span>Diagramas</span>
-            </button>
-            <button
-              onClick={() => setViewMode('artwork')}
-              className={cn('px-2.5 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all', viewMode === 'artwork' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white')}
-              title="Vista Obras de Arte"
-            >
-              <Palette className="h-3.5 w-3.5" />
-              <span>Arte</span>
-            </button>
-            <button
-              onClick={() => setViewMode('compact')}
-              className={cn('px-2.5 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all', viewMode === 'compact' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white')}
-              title="Vista Lista Compacta"
-            >
-              <List className="h-3.5 w-3.5" />
-              <span>Lista</span>
-            </button>
-          </div>
-
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className={cn('gap-2 rounded-xl border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white', activeFiltersCount > 0 && 'border-blue-500/50 text-blue-400')}
+            className={cn('gap-2', activeFiltersCount > 0 && 'border-chess-gold/50 text-chess-gold bg-chess-gold/5')}
           >
-            <Filter className="h-4 w-4" />
+            <SlidersHorizontal className="h-4 w-4" />
             <span>{t.filters}</span>
             {activeFiltersCount > 0 && (
-              <span className="bg-blue-500/20 text-blue-400 text-xs px-1.5 py-0.5 rounded-full">
+              <span className="bg-chess-gold/20 text-chess-gold text-xs px-2 py-0.5 rounded-full">
                 {activeFiltersCount}
               </span>
             )}
           </Button>
-          
-          <Button 
-            variant="ghost" 
-            onClick={() => setSortOrder(o => o === 'asc' ? 'desc' : 'asc')} 
-            className="gap-1 text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl"
-          >
-            <ChevronDown className={cn('h-4 w-4 transition-transform', sortOrder === 'desc' && 'rotate-180')} />
-            <span className="text-xs uppercase font-mono">{sortOrder}</span>
-          </Button>
         </div>
       </div>
 
-      {/* Quick Category Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button
-          onClick={() => setCategoryFilter('')}
-          className={cn(
-            'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border',
-            !categoryFilter 
-              ? 'bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-500/20' 
-              : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
-          )}
-        >
-          ✨ Todas las categorías
-        </button>
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(categoryFilter === cat ? '' : cat)}
-            className={cn(
-              'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border',
-              categoryFilter === cat 
-                ? 'bg-blue-600 border-blue-500 text-white shadow-md shadow-blue-500/20' 
-                : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
-            )}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Filter Drawer */}
-      {showFilters && (
-        <div className="flex flex-wrap gap-4 p-4 bg-slate-900/50 border border-slate-800 rounded-2xl animate-slide-down">
+      {/* Filter Panel */}
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: 'auto' }}
+        exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+        className={cn('overflow-hidden', showFilters ? 'block' : 'hidden')}
+      >
+        <div className="flex flex-wrap gap-4 p-5 glass rounded-2xl mb-6">
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs font-medium text-slate-400 mb-1">{t.difficulty}</label>
+            <label className="block text-xs font-medium text-chess-text-muted mb-1">{t.difficulty}</label>
             <Select value={difficultyFilter} onValueChange={(value) => setDifficultyFilter(value ?? '')}>
-              <SelectTrigger className="bg-slate-800/60 border-slate-700 rounded-xl">
+              <SelectTrigger className="bg-chess-surface-elevated/50 border-chess-border/50">
                 <SelectValue placeholder={t.difficulty} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas</SelectItem>
+                <SelectItem value="">{locale === 'es' ? 'Todas' : 'All'}</SelectItem>
                 {difficulties.map(d => (
                   <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
                 ))}
@@ -246,13 +171,13 @@ export function CombinationGallery({
             </Select>
           </div>
           <div className="flex-1 min-w-[120px]">
-            <label className="block text-xs font-medium text-slate-400 mb-1">{t.year}</label>
+            <label className="block text-xs font-medium text-chess-text-muted mb-1">{t.year}</label>
             <Select value={yearFilter} onValueChange={(value) => setYearFilter(value ?? '')}>
-              <SelectTrigger className="bg-slate-800/60 border-slate-700 rounded-xl">
+              <SelectTrigger className="bg-chess-surface-elevated/50 border-chess-border/50">
                 <SelectValue placeholder={t.year} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="">{locale === 'es' ? 'Todos' : 'All'}</SelectItem>
                 {years.map(y => (
                   <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                 ))}
@@ -260,70 +185,97 @@ export function CombinationGallery({
             </Select>
           </div>
           <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs font-medium text-slate-400 mb-1">{t.player}</label>
+            <label className="block text-xs font-medium text-chess-text-muted mb-1">{t.category}</label>
+            <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value ?? '')}>
+              <SelectTrigger className="bg-chess-surface-elevated/50 border-chess-border/50">
+                <SelectValue placeholder={t.category} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">{locale === 'es' ? 'Todas' : 'All'}</SelectItem>
+                {categories.map(c => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex-1 min-w-[180px]">
+            <label className="block text-xs font-medium text-chess-text-muted mb-1">{t.player}</label>
             <Input
               placeholder={t.player}
               value={playerFilter}
               onChange={(e) => setPlayerFilter(e.target.value)}
-              className="bg-slate-800/60 border-slate-700 rounded-xl"
+              className="bg-chess-surface-elevated/50 border-chess-border/50"
             />
           </div>
           {activeFiltersCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="self-end text-rose-400 hover:text-rose-300">
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="self-end text-chess-text-secondary hover:text-red-400">
               <X className="h-4 w-4 mr-1" />
               {t.clear}
             </Button>
           )}
         </div>
-      )}
+      </motion.div>
 
-      {/* Grid or List View */}
-      {sortedCombinations.length === 0 ? (
-        <div className="text-center py-16 text-slate-500 bg-slate-900/20 border border-slate-800/60 rounded-2xl">
-          <Search className="h-12 w-12 mx-auto mb-4 opacity-30 text-blue-400" />
-          <p className="text-lg text-slate-300 font-medium">{t.noResults}</p>
-          <p className="text-sm text-slate-500 mt-1">{locale === 'es' ? 'Intenta ajustar los filtros de búsqueda' : 'Try adjusting your search filters'}</p>
-        </div>
-      ) : viewMode === 'compact' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {sortedCombinations.map((combination) => (
-            <CombinationCard
-              key={combination.slug || combination.id}
-              combination={combination}
-              locale={locale}
-              variant="compact"
-            />
-          ))}
-        </div>
+      {/* Results */}
+      {filteredCombinations.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-20"
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-chess-surface-elevated/50 border border-chess-border/50 flex items-center justify-center">
+            <Search className="h-8 w-8 text-chess-text-muted/50" />
+          </div>
+          <p className="text-lg text-chess-text-secondary mb-1">{t.noResults}</p>
+          <p className="text-sm text-chess-text-muted">{locale === 'es' ? 'Intenta ajustar los filtros' : 'Try adjusting filters'}</p>
+        </motion.div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {sortedCombinations.map((combination) => (
+          {/* Masonry Grid */}
+          <div className="masonry-grid">
+            {filteredCombinations.map((combination, index) => (
               <CombinationCard
-                key={combination.slug || combination.id}
+                key={combination.id}
                 combination={combination}
                 locale={locale}
-                variant="default"
+                variant="masonry"
               />
             ))}
           </div>
 
+          {/* Load More */}
           {(hasMore || isLoading) && (
-            <div className="text-center pt-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center pt-8"
+            >
               <Button 
                 variant="outline" 
                 onClick={handleLoadMore}
                 disabled={isLoading}
-                className="w-full max-w-xs rounded-xl border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200"
+                className="w-full max-w-xs"
               >
-                {isLoading ? 'Cargando...' : t.loadMore}
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Cargando...
+                  </span>
+                ) : t.loadMore}
               </Button>
-            </div>
+            </motion.div>
           )}
 
-          <p className="text-center text-xs text-slate-500 font-mono">
-            {t.showing} {sortedCombinations.length} {t.of} {combinations.length} {t.combinations}
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-sm text-chess-text-muted pt-4"
+          >
+            {t.showing} {filteredCombinations.length} {t.of} {combinations.length} {t.combinations}
+          </motion.p>
         </>
       )}
     </div>

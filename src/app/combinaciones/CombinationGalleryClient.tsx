@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { Header } from '@/components/layout/Header';
 import { CombinationGallery } from '@/components/combinations/CombinationGallery';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { getTranslations } from '@/lib/i18n';
-import Link from 'next/link';
 import type { Combination } from '@/types/combination';
 
 interface CombinationGalleryClientProps {
@@ -18,7 +18,6 @@ export function CombinationGalleryClient({ initialCombinations }: CombinationGal
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [total, setTotal] = useState(0);
 
   const translations = getTranslations(locale);
 
@@ -32,7 +31,6 @@ export function CombinationGalleryClient({ initialCombinations }: CombinationGal
       if (data.combinations.length > 0) {
         setCombinations(prev => [...prev, ...data.combinations]);
         setPage(nextPage);
-        setTotal(data.pagination.total);
         setHasMore(data.pagination.page < data.pagination.totalPages);
         return data.combinations;
       } else {
@@ -47,74 +45,48 @@ export function CombinationGalleryClient({ initialCombinations }: CombinationGal
     }
   }, [page, hasMore, isLoadingMore]);
 
-  useEffect(() => {
-    fetch(`/api/combinations?page=1&limit=1`)
-      .then(res => res.json())
-      .then(data => setTotal(data.pagination.total))
-      .catch(console.error);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-slate-950">
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="font-bold text-xl text-white tracking-tight">
-                CHESS ART
-              </Link>
-              <div className="hidden md:flex items-center gap-6">
-                <Link href="/combinaciones" className="text-sm text-blue-400 font-medium">
-                  {translations.nav.top100}
-                </Link>
-                <Link href="/visor" className="text-sm text-slate-400 hover:text-white transition-colors">
-                  {translations.nav.pgn}
-                </Link>
-                <Link href="#about" className="text-sm text-slate-400 hover:text-white transition-colors">
-                  {translations.nav.about}
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setLocale(l => l === 'es' ? 'en' : 'es')}
-                className="px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white bg-slate-800/50 rounded-lg transition-colors"
-              >
-                {locale === 'es' ? 'EN' : 'ES'}
-              </button>
-            </div>
-          </div>
-        </nav>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-chess-bg">
+      <Header locale={locale} />
+      
+      <main className="pt-20 lg:pt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="space-y-8"
+          className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12"
         >
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-              {translations.gallery.title}
-            </h1>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              {translations.gallery.subtitle}
-            </p>
-          </div>
+          {/* Header with search and filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-10"
+          >
+            <div className="mb-8">
+              <h1 className="font-display text-display-sm text-chess-text-primary mb-2">
+                {translations.gallery.title}
+              </h1>
+              <p className="text-chess-text-secondary max-w-2xl">
+                {translations.gallery.subtitle}
+              </p>
+            </div>
 
-          <CombinationGallery
-            initialCombinations={combinations}
-            locale={locale}
-            onLoadMore={loadMore}
-            hasMore={hasMore}
-          />
+            <CombinationGallery
+              initialCombinations={combinations}
+              locale={locale}
+              onLoadMore={loadMore}
+              hasMore={hasMore}
+            />
+          </motion.div>
         </motion.div>
       </main>
 
-      <footer className="border-t border-slate-800 bg-slate-950 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500 text-sm">
-          <p>Chess Art & AI Academy · {new Date().getFullYear()} · {translations.footer.rights}</p>
+      <footer className="border-t border-chess-border/30 bg-chess-surface/50 py-10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
+          <p className="text-chess-text-muted text-sm">
+            Chess Art & AI Academy · {new Date().getFullYear()} · {translations.footer.rights}
+          </p>
         </div>
       </footer>
 
