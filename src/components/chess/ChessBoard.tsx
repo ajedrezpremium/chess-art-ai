@@ -4,22 +4,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Chess } from 'chess.js';
 import { cn } from '@/lib/utils';
 
+import { normalizeFen, DEFAULT_FEN } from '@/lib/chess/pgn-utils';
+
 const BLUE_DARK_SQUARE = '#2B4C7E';
 const CREAM_LIGHT_SQUARE = '#E2E8F0';
 const HIGHLIGHT_COLOR = '#3B82F6';
 const LAST_MOVE_COLOR = '#2563EB';
-
-const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-
-function normalizeFen(fen?: string): string {
-  if (!fen || typeof fen !== 'string') return DEFAULT_FEN;
-  const fields = fen.trim().split(/\s+/);
-  if (fields.length !== 6) {
-    console.warn('[ChessBoard] Invalid FEN, using default:', fen);
-    return DEFAULT_FEN;
-  }
-  return fields.join(' ');
-}
 
 const pieceSet: Record<string, string> = {
   wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
@@ -42,7 +32,7 @@ interface ChessBoardProps {
 }
 
 export function ChessBoard({
-  fen = 'start',
+  fen = DEFAULT_FEN,
   orientation = 'white',
   coordinates = true,
   highlights = {},
@@ -56,14 +46,28 @@ export function ChessBoard({
   style,
 }: ChessBoardProps) {
   const safeFen = normalizeFen(fen);
-  const [chess] = useState(() => new Chess(safeFen));
+  const [chess] = useState(() => {
+    const c = new Chess();
+    try {
+      c.load(safeFen);
+    } catch {
+      c.reset();
+    }
+    return c;
+  });
   const [position, setPosition] = useState<Record<string, string>>({});
   const [animationKey, setAnimationKey] = useState(0);
   const chessRef = useRef(chess);
   chessRef.current = chess;
 
   useEffect(() => {
-    chessRef.current.load(fen);
+    const validFen = normalizeFen(fen);
+    try {
+      chessRef.current.load(validFen);
+    } catch (e) {
+      console.warn('[ChessBoard] Error loading FEN:', e);
+      chessRef.current.reset();
+    }
     setPosition(chessRef.current.board().reduce((acc, row) => {
       row.forEach(piece => {
         if (piece) {
@@ -243,7 +247,7 @@ export function ChessBoard({
 }
 
 export function ChessBoardSvg({
-  fen = 'start',
+  fen = DEFAULT_FEN,
   orientation = 'white',
   coordinates = true,
   highlights = {},
@@ -253,11 +257,26 @@ export function ChessBoardSvg({
   className,
   style,
 }: ChessBoardProps) {
-  const [chess] = useState(() => new Chess(fen));
+  const safeFen = normalizeFen(fen);
+  const [chess] = useState(() => {
+    const c = new Chess();
+    try {
+      c.load(safeFen);
+    } catch {
+      c.reset();
+    }
+    return c;
+  });
   const [position, setPosition] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    chess.load(fen);
+    const validFen = normalizeFen(fen);
+    try {
+      chess.load(validFen);
+    } catch (e) {
+      console.warn('[ChessBoardSvg] Error loading FEN:', e);
+      chess.reset();
+    }
     setPosition(chess.board().reduce((acc, row) => {
       row.forEach(piece => {
         if (piece) {

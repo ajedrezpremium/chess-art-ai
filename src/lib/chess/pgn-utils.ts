@@ -1,6 +1,20 @@
 import { Chess } from 'chess.js';
 import type { ParsedPGN, PGNMove } from '@/types/combination';
 
+export const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+export function normalizeFen(fen?: string): string {
+  if (!fen || typeof fen !== 'string' || fen.trim() === 'start') return DEFAULT_FEN;
+  const fields = fen.trim().split(/\s+/);
+  if (fields.length === 4) {
+    return `${fields.join(' ')} 0 1`;
+  }
+  if (fields.length !== 6) {
+    return DEFAULT_FEN;
+  }
+  return fields.join(' ');
+}
+
 export function parsePGN(pgn: string): ParsedPGN {
   const chess = new Chess();
   const lines = pgn.trim().split('\n');
@@ -24,7 +38,15 @@ export function parsePGN(pgn: string): ParsedPGN {
     }
   }
 
-  chess.load(headers.FEN || 'start');
+  if (headers.FEN) {
+    try {
+      chess.load(normalizeFen(headers.FEN));
+    } catch {
+      chess.reset();
+    }
+  } else {
+    chess.reset();
+  }
   const initialFen = chess.fen();
   
   const moves: PGNMove[] = [];
