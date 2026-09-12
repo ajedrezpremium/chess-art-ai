@@ -17,7 +17,6 @@ export function Hero({ locale = 'es' }: HeroProps) {
     { label: locale === 'es' ? 'Artista' : 'Artist', value: '1', icon: Sparkles },
   ];
   const t = locale === 'es' ? {
-    badge: '🚀 Nueva versión — Rediseño visual completo',
     title1: 'Donde el ajedrez',
     title2: 'se convierte en',
     title3: 'arte',
@@ -27,7 +26,6 @@ export function Hero({ locale = 'es' }: HeroProps) {
     featuredCombo: 'Combinación destacada',
     statsLabel: 'Lo que encontrarás',
   } : {
-    badge: '🚀 New version — Complete visual redesign',
     title1: 'Where chess',
     title2: 'becomes',
     title3: 'art',
@@ -72,40 +70,26 @@ export function Hero({ locale = 'es' }: HeroProps) {
       <div className="absolute inset-0 chess-pattern opacity-30 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 sm:px-8 lg:px-12">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-chess-surface/80 backdrop-blur-xl border border-chess-gold/30 rounded-full text-sm font-medium text-chess-gold"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chess-gold opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-chess-gold" />
-          </span>
-          <span>{t.badge}</span>
-        </motion.div>
-
-        {/* Main Title */}
+        {/* Main Title - LARGER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
-          className="mb-8 space-y-2"
+          className="mb-6 space-y-1"
         >
-          <h1 className="font-display text-display-xl text-chess-text-primary font-semibold leading-tight tracking-tight">
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight">
             <span className="block">{t.title1}</span>
             <span className="block gradient-text-gold">{t.title2}</span>
             <span className="block gradient-text-gold">{t.title3}</span>
           </h1>
         </motion.div>
 
-        {/* Subtitle */}
+        {/* Subtitle - LARGER */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.35, ease: [0.19, 1, 0.22, 1] }}
-          className="max-w-3xl text-body-lg text-chess-text-secondary leading-relaxed"
+          className="max-w-4xl text-xl md:text-2xl lg:text-3xl text-chess-text-secondary leading-relaxed font-light"
         >
           {t.subtitle}
         </motion.p>
@@ -115,12 +99,12 @@ export function Hero({ locale = 'es' }: HeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: [0.19, 1, 0.22, 1] }}
-          className="mt-10 flex flex-col sm:flex-row items-center gap-4"
+          className="mt-12 flex flex-col sm:flex-row items-center gap-4"
         >
           <Link href="/combinaciones">
             <Button className="btn-primary group w-full sm:w-auto" size="lg">
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              {t.ctaPrimary}
+              {locale === 'es' ? 'Explorar el Top 100' : 'Explore Top 100'}
             </Button>
           </Link>
           <Button 
@@ -128,7 +112,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
             onClick={() => document.getElementById('agent-toggle')?.click()}
           >
             <Bot className="h-5 w-5" />
-            {t.ctaSecondary}
+            {locale === 'es' ? 'Hablar con el Agente IA' : 'Chat with AI Agent'}
           </Button>
         </motion.div>
 

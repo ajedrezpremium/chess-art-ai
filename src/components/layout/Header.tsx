@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Bot, Palette, BookOpen, Film, Image, Music, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Palette, BookOpen, Film, Image, Music, Globe, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/combinaciones', label: { es: 'Combinaciones', en: 'Combinations' }, icon: Palette, tooltip: { es: 'Ver las 100 mejores combinaciones', en: 'View top 100 combinations' } },
+  { href: '/combinaciones', label: { es: 'Ajedrez', en: 'Chess' }, icon: Palette, tooltip: { es: 'Ver las 100 mejores combinaciones', en: 'View top 100 combinations' } },
   { href: '/arte', label: { es: 'Arte', en: 'Art' }, icon: Image, tooltip: { es: 'Galería de ilustraciones', en: 'Artwork gallery' } },
   { href: '/libros', label: { es: 'Libros', en: 'Books' }, icon: BookOpen, tooltip: { es: 'Libros de ajedrez', en: 'Chess books' } },
   { href: '/cine', label: { es: 'Cine', en: 'Cinema' }, icon: Film, tooltip: { es: 'Ajedrez en el cine', en: 'Chess in cinema' } },
@@ -25,10 +25,9 @@ const languages = [
 interface HeaderProps {
   locale?: 'es' | 'en';
   onLocaleChange?: (locale: 'es' | 'en') => void;
-  onAgentToggle?: () => void;
 }
 
-export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderProps) {
+export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
@@ -42,18 +41,15 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
 
   const t = locale === 'es' ? {
     nav: navItems.map(i => i.label.es),
-    agent: 'Agente IA',
     language: 'Idioma',
   } : {
     nav: navItems.map(i => i.label.en),
-    agent: 'AI Agent',
     language: 'Language',
   };
 
   const handleLocaleChange = (newLocale: 'es' | 'en') => {
-    onLocaleChange?.(newLocale);
-    setIsLangMenuOpen(false);
     window.dispatchEvent(new CustomEvent('toggle-language', { detail: newLocale }));
+    setIsLangMenuOpen(false);
   };
 
   return (
@@ -71,7 +67,7 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
       >
         <nav className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" aria-label="Main navigation">
           <div className="flex items-center justify-between h-18 lg:h-20">
-            {/* Logo */}
+            {/* Logo + Name in one row */}
             <Link 
               href="/" 
               className="flex items-center gap-3 font-display text-xl md:text-2xl font-semibold text-chess-text-primary tracking-tight z-50"
@@ -126,18 +122,18 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
               })}
             </div>
 
-            {/* Right side actions */}
+            {/* Right side actions - only language selector */}
             <div className="flex items-center gap-3">
               {/* Language Selector with Flag */}
               <div className="relative">
-<Tooltip>
+                <Tooltip>
                   <TooltipTrigger>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-10 w-10 sm:w-auto px-3 rounded-xl text-chess-text-secondary hover:text-chess-gold hover:bg-chess-surface-elevated/50 transition-all duration-200 flex items-center gap-2"
                       onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                      aria-label={t.language}
+                      aria-label={locale === 'es' ? 'Idioma' : 'Language'}
                       aria-expanded={isLangMenuOpen}
                       aria-haspopup="listbox"
                     >
@@ -146,10 +142,10 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
                       <ChevronDown className={cn('h-4 w-4 transition-transform', isLangMenuOpen && 'rotate-180')} />
                     </Button>
                   </TooltipTrigger>
-                    <TooltipContent side="bottom" align="end" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                      {t.language}
-                    </TooltipContent>
-                  </Tooltip>
+                  <TooltipContent side="bottom" align="end" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
+                    {locale === 'es' ? 'Idioma' : 'Language'}
+                  </TooltipContent>
+                </Tooltip>
 
                 <AnimatePresence>
                   {isLangMenuOpen && (
@@ -160,12 +156,15 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
                       transition={{ duration: 0.2, ease: [0.19, 1, 0.22, 1] }}
                       className="absolute right-0 mt-2 w-40 glass-strong rounded-xl py-2 shadow-strong border border-chess-border/50 z-50"
                       role="listbox"
-                      aria-label={t.language}
+                      aria-label={locale === 'es' ? 'Idioma' : 'Language'}
                     >
                       {languages.map(lang => (
                         <button
                           key={lang.code}
-                          onClick={() => handleLocaleChange(lang.code as 'es' | 'en')}
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent('toggle-language', { detail: lang.code }));
+                            setIsLangMenuOpen(false);
+                          }}
                           className={cn(
                             'w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
                             locale === lang.code
@@ -185,29 +184,13 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
                 </AnimatePresence>
               </div>
 
-              {/* Agent toggle */}
-              <Button
-                id="agent-toggle"
-                onClick={onAgentToggle}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200',
-                  'bg-gradient-to-r from-chess-violet to-chess-violet-light text-chess-bg',
-                  'hover:shadow-[0_8px_24px_-4px_rgba(108,92,231,0.5)] hover:scale-[1.02]',
-                  'active:scale-[0.98]'
-                )}
-                aria-label={t.agent}
-              >
-                <Bot className="h-4 w-4" />
-                <span className="hidden sm:inline">{t.agent}</span>
-              </Button>
-
               {/* Mobile menu button */}
               <Button
                 variant="ghost"
                 size="icon"
                 className="lg:hidden h-10 w-10 rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label={isMobileMenuOpen ? (locale === 'es' ? 'Cerrar menú' : 'Close menu') : (locale === 'es' ? 'Abrir menú' : 'Open menu')}
+                aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                 aria-expanded={isMobileMenuOpen}
               >
                 <AnimatePresence mode="wait">
@@ -269,14 +252,6 @@ export function Header({ locale = 'es', onLocaleChange, onAgentToggle }: HeaderP
                       </Link>
                     );
                   })}
-                  <div className="pt-2 border-t border-chess-border/30" />
-                  <Button
-                    onClick={onAgentToggle}
-                    className="w-full justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-chess-violet to-chess-violet-light text-chess-bg font-semibold rounded-xl"
-                  >
-                    <Bot className="h-5 w-5" />
-                    {t.agent}
-                  </Button>
                 </div>
               </motion.div>
             )}
