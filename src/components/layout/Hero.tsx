@@ -77,7 +77,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
           className="mb-6 space-y-1"
         >
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight">
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight">
             <span className="block">{t.title1}</span>
             <span className="block gradient-text-gold">{t.title2}</span>
             <span className="block gradient-text-gold">{t.title3}</span>
