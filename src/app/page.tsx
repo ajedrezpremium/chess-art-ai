@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { DEMO_COMBINATIONS } from '@/lib/data/combinations';
 import { HomeClient } from './HomeClient';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Chess Art & AI Academy - Ajedrez, Arte e Inteligencia Artificial',
@@ -8,16 +11,25 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const supabase = await createClient();
-  
-  const { data: combinations } = await supabase
-    .from('combinations')
-    .select('*')
-    .order('number', { ascending: true })
-    .limit(10);
-  
-  const featured = combinations?.[0] || null;
-  const galleryPreview = combinations?.slice(1, 5) || [];
+  let combinations = null;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('combinations')
+      .select('*')
+      .order('number', { ascending: true })
+      .limit(10);
+    
+    if (!error && data && data.length > 0) {
+      combinations = data;
+    }
+  } catch (err) {
+    console.error('Error fetching combinations for home:', err);
+  }
+
+  const list = combinations || DEMO_COMBINATIONS;
+  const featured = list[0] || null;
+  const galleryPreview = list.slice(1, 5);
   
   return <HomeClient featured={featured} galleryPreview={galleryPreview} />;
 }

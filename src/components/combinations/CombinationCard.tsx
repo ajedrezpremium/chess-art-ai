@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChessRook, ExternalLink, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import type { Combination } from '@/types/combination';
 import { DIFFICULTY_COLORS } from '@/lib/chess/pgn-utils';
+import { ChessBoardSvg } from '@/components/chess/ChessBoard';
 import Link from 'next/link';
 
 interface CombinationCardProps {
@@ -37,6 +39,7 @@ export function CombinationCard({
   locale = 'es',
   variant = 'default'
 }: CombinationCardProps) {
+  const [imgError, setImgError] = useState(false);
   const difficultyColor = DIFFICULTY_COLORS[combination.difficulty] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
   const difficultyLabel = locale === 'es' 
     ? DIFFICULTY_LABELS_ES[combination.difficulty] 
@@ -50,13 +53,16 @@ export function CombinationCard({
         href={`/combinaciones/${combination.slug}`}
         className="group flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/50 rounded-xl hover:border-blue-500/50 hover:bg-slate-800/50 transition-all"
       >
-        <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-800/50 border border-slate-700 overflow-hidden relative">
-          {combination.artwork_url && (
+        <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-slate-800/50 border border-slate-700 overflow-hidden relative flex items-center justify-center">
+          {combination.artwork_url && !imgError ? (
             <img 
               src={combination.artwork_url} 
               alt={combination.title}
+              onError={() => setImgError(true)}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
+          ) : (
+            <ChessBoardSvg fen={combination.fen} coordinates={false} className="w-full h-full border-none shadow-none rounded-none" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -78,19 +84,20 @@ export function CombinationCard({
   if (variant === 'featured') {
     return (
       <article className="group relative bg-slate-900/50 border border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all">
-        <div className="relative aspect-[4/3] overflow-hidden">
-          {combination.artwork_url ? (
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-950 flex items-center justify-center">
+          {combination.artwork_url && !imgError ? (
             <img
               src={combination.artwork_url}
               alt={combination.title}
+              onError={() => setImgError(true)}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-              <ChessRook className="h-16 w-16 text-slate-600" />
+            <div className="w-full h-full flex items-center justify-center p-4">
+              <ChessBoardSvg fen={combination.fen} coordinates={false} className="max-w-[280px] w-full" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between opacity-0 group-hover:opacity-100 transition-opacity">
             <Link
               href={`/combinaciones/${combination.slug}`}
@@ -132,20 +139,21 @@ export function CombinationCard({
 
   return (
     <article className="group bg-slate-900/50 border border-slate-700 rounded-xl overflow-hidden hover:border-blue-500/50 transition-all flex flex-col h-full">
-      <div className="relative aspect-square overflow-hidden">
-        {combination.artwork_url ? (
+      <div className="relative aspect-square overflow-hidden bg-slate-950 flex items-center justify-center">
+        {combination.artwork_url && !imgError ? (
           <img
             src={combination.artwork_url}
             alt={combination.title}
+            onError={() => setImgError(true)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-            <ChessRook className="h-12 w-12 text-slate-600" />
+          <div className="w-full h-full p-2 flex items-center justify-center">
+            <ChessBoardSvg fen={combination.fen} coordinates={false} className="w-full h-full border-none shadow-none" />
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
-        <div className="absolute top-3 left-3 right-3 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-3 left-3 right-3 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <span className="text-xs font-mono text-blue-400 bg-slate-900/80 px-2 py-1 rounded">
             {formatNumber(combination.number)}
           </span>

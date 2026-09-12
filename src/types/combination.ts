@@ -1,27 +1,27 @@
 export interface Combination {
-  id: string;
+  id?: string;
   number: number;
   slug: string;
   title: string;
-  whitePlayer: string;
-  blackPlayer: string;
   white_player: string;
   black_player: string;
+  whitePlayer?: string;
+  blackPlayer?: string;
   event: string;
   year: number;
   result: string;
   fen: string;
   pgn: string;
-  opening: string;
-  category: string;
+  opening?: string;
+  category?: string;
   difficulty: DifficultyLevel;
   description: string;
-  artworkUrl: string;
-  artwork_url: string;
-  artistNotes: string;
-  artist_notes: string;
-  createdAt: string;
-  created_at: string;
+  artwork_url?: string;
+  artworkUrl?: string;
+  artist_notes?: string;
+  artistNotes?: string;
+  created_at?: string;
+  createdAt?: string;
 }
 
 export type DifficultyLevel = 

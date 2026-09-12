@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { DEMO_COMBINATIONS } from '@/lib/data/combinations';
 import { CombinationGalleryClient } from './CombinationGalleryClient';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'TOP 100 Combinaciones | Chess Art & AI Academy',
@@ -8,17 +11,21 @@ export const metadata: Metadata = {
 };
 
 export default async function CombinacionesPage() {
-  const supabase = await createClient();
-  
-  const { data: combinations, error } = await supabase
-    .from('combinations')
-    .select('*')
-    .order('number', { ascending: true })
-    .limit(20);
-  
-  if (error) {
-    console.error('Error fetching combinations:', error);
+  let combinations: any[] | null = null;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('combinations')
+      .select('*')
+      .order('number', { ascending: true })
+      .limit(20);
+    
+    if (!error && data && data.length > 0) {
+      combinations = data;
+    }
+  } catch (err) {
+    console.error('Error fetching combinations:', err);
   }
   
-  return <CombinationGalleryClient initialCombinations={combinations || []} />;
+  return <CombinationGalleryClient initialCombinations={combinations || DEMO_COMBINATIONS} />;
 }
