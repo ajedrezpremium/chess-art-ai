@@ -3,18 +3,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Chess } from 'chess.js';
 import { cn } from '@/lib/utils';
-
 import { normalizeFen, DEFAULT_FEN } from '@/lib/chess/pgn-utils';
+import { ChessPiece } from './pieces';
+import { playChessSound } from '@/lib/chess/sound';
 
 const BLUE_DARK_SQUARE = '#2B4C7E';
 const CREAM_LIGHT_SQUARE = '#E2E8F0';
 const HIGHLIGHT_COLOR = '#3B82F6';
-const LAST_MOVE_COLOR = '#2563EB';
-
-const pieceSet: Record<string, string> = {
-  wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
-  bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟',
-};
+const LAST_MOVE_COLOR = '#1D4ED8';
+const SELECTED_COLOR = '#F59E0B';
 
 interface ChessBoardProps {
   fen?: string;
@@ -38,7 +35,7 @@ export function ChessBoard({
   highlights = {},
   arrows = [],
   lastMove = null,
-  selectedSquare = null,
+  selectedSquare: externalSelected = null,
   interactive = false,
   onMove,
   onSquareClick,
@@ -56,9 +53,23 @@ export function ChessBoard({
     return c;
   });
   const [position, setPosition] = useState<Record<string, string>>({});
-  const [animationKey, setAnimationKey] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [legalMoves, setLegalMoves] = useState<string[]>([]);
   const chessRef = useRef(chess);
   chessRef.current = chess;
+
+  const updatePosition = useCallback(() => {
+    const game = chessRef.current;
+    setPosition(game.board().reduce((acc, row) => {
+      row.forEach(piece => {
+        if (piece) {
+          const square = piece.square;
+          acc[square] = `${piece.color}${piece.type.toUpperCase()}`;
+        }
+      });
+      return acc;
+    }, {} as Record<string, string>));
+  }, []);
 
   useEffect(() => {
     const validFen = normalizeFen(fen);
@@ -68,60 +79,75 @@ export function ChessBoard({
       console.warn('[ChessBoard] Error loading FEN:', e);
       chessRef.current.reset();
     }
-    setPosition(chessRef.current.board().reduce((acc, row) => {
-      row.forEach(piece => {
-        if (piece) {
-          const square = piece.square;
-          acc[square] = piece.type === 'p' ? (piece.color === 'w' ? 'wP' : 'bP') :
-                       piece.type === 'n' ? (piece.color === 'w' ? 'wN' : 'bN') :
-                       piece.type === 'b' ? (piece.color === 'w' ? 'wB' : 'bB') :
-                       piece.type === 'r' ? (piece.color === 'w' ? 'wR' : 'bR') :
-                       piece.type === 'q' ? (piece.color === 'w' ? 'wQ' : 'bQ') :
-                       piece.type === 'k' ? (piece.color === 'w' ? 'wK' : 'bK') : '';
-        }
-      });
-      return acc;
-    }, {} as Record<string, string>));
-    setAnimationKey(k => k + 1);
-  }, [fen]);
+    updatePosition();
+    setSelected(null);
+    setLegalMoves([]);
+  }, [fen, updatePosition]);
 
-  const handlePieceDrop = useCallback((sourceSquare: string, targetSquare: string, piece: string) => {
-    if (!interactive || !onMove) return false;
+  const handleSquarePress = useCallback((square: string) => {
+    const piece = position[square] || null;
+
+    if (!interactive) {
+      onSquareClick?.(square, piece);
+      return;
+    }
 
     const game = chessRef.current;
-    const move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q',
-    });
 
-    if (move) {
-      setPosition(game.board().reduce((acc, row) => {
-        row.forEach(p => {
-          if (p) {
-            const sq = p.square;
-            acc[sq] = p.type === 'p' ? (p.color === 'w' ? 'wP' : 'bP') :
-                     p.type === 'n' ? (p.color === 'w' ? 'wN' : 'bN') :
-                     p.type === 'b' ? (p.color === 'w' ? 'wB' : 'bB') :
-                     p.type === 'r' ? (p.color === 'w' ? 'wR' : 'bR') :
-                     p.type === 'q' ? (p.color === 'w' ? 'wQ' : 'bQ') :
-                     p.type === 'k' ? (p.color === 'w' ? 'wK' : 'bK') : '';
-          }
+    // If already selected a square and clicking a target
+    if (selected) {
+      if (selected === square) {
+        setSelected(null);
+        setLegalMoves([]);
+        return;
+      }
+
+      try {
+        const isCapture = !!position[square];
+        const move = game.move({
+          from: selected,
+          to: square,
+          promotion: 'q',
         });
-        return acc;
-      }, {} as Record<string, string>));
-      setAnimationKey(k => k + 1);
-      onMove(sourceSquare, targetSquare, move.promotion);
-      return true;
-    }
-    return false;
-  }, [interactive, onMove]);
 
-  const handleSquareClick = useCallback((square: string, piece: string | null) => {
-    if (!interactive && onSquareClick) {
-      onSquareClick(square, piece);
+        if (move) {
+          updatePosition();
+          setSelected(null);
+          setLegalMoves([]);
+          
+          if (game.inCheck()) {
+            playChessSound('check');
+          } else if (isCapture || move.captured) {
+            playChessSound('capture');
+          } else {
+            playChessSound('move');
+          }
+
+          onMove?.(selected, square, move.promotion);
+          return;
+        }
+      } catch {
+        // Invalid move, try selecting new piece
+      }
     }
-  }, [interactive, onSquareClick]);
+
+    // Select piece if it belongs to current turn
+    if (piece) {
+      const turn = game.turn();
+      const pieceColor = piece[0];
+      if (pieceColor === turn) {
+        setSelected(square);
+        const moves = game.moves({ square: square as any, verbose: true });
+        setLegalMoves(moves.map(m => m.to));
+        onSquareClick?.(square, piece);
+        return;
+      }
+    }
+
+    setSelected(null);
+    setLegalMoves([]);
+    onSquareClick?.(square, piece);
+  }, [interactive, selected, position, onMove, onSquareClick, updatePosition]);
 
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   const ranks = orientation === 'white' ? [8,7,6,5,4,3,2,1] : [1,2,3,4,5,6,7,8];
@@ -132,6 +158,7 @@ export function ChessBoard({
     return isDark ? BLUE_DARK_SQUARE : CREAM_LIGHT_SQUARE;
   };
 
+  const activeSelected = externalSelected || selected;
   const mergedHighlights: Record<string, string> = { ...highlights };
   
   if (lastMove) {
@@ -139,20 +166,19 @@ export function ChessBoard({
     mergedHighlights[lastMove.to] = LAST_MOVE_COLOR;
   }
   
-  if (selectedSquare) {
-    mergedHighlights[selectedSquare] = HIGHLIGHT_COLOR;
+  if (activeSelected) {
+    mergedHighlights[activeSelected] = SELECTED_COLOR;
   }
 
   return (
     <div
-      key={animationKey}
-      className={cn('relative inline-block rounded-lg shadow-2xl border border-slate-700', className)}
+      className={cn('relative inline-block rounded-xl shadow-2xl border border-slate-700/80 bg-slate-900 select-none overflow-hidden', className)}
       style={{ maxWidth: '640px', width: '100%', aspectRatio: '1 / 1', ...style }}
     >
       <svg viewBox="0 0 512 512" style={{ width: '100%', height: '100%', display: 'block' }}>
         <defs>
-          <filter id="pieceShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="1" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.3"/>
+          <filter id="boardPieceShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000000" floodOpacity="0.45"/>
           </filter>
         </defs>
         
@@ -165,37 +191,62 @@ export function ChessBoard({
             const y = displayRankIdx * 64;
             const color = getSquareColor(fileIdx, 7 - rankIdx);
             const highlight = mergedHighlights[square];
+            const isLegal = legalMoves.includes(square);
+            const hasPiece = !!position[square];
             
             return (
-              <g key={square}>
+              <g 
+                key={square} 
+                onClick={() => handleSquarePress(square)}
+                className={cn('transition-opacity duration-150', interactive ? 'cursor-pointer' : '')}
+              >
+                {/* Square Background */}
                 <rect
                   x={x}
                   y={y}
                   width={64}
                   height={64}
                   fill={highlight || color}
-                  rx={highlight ? 4 : 0}
+                  opacity={highlight ? 0.9 : 1}
                 />
+
+                {/* Legal move indicator */}
+                {isLegal && !hasPiece && (
+                  <circle
+                    cx={x + 32}
+                    cy={y + 32}
+                    r={8}
+                    fill="#10B981"
+                    opacity={0.8}
+                    className="animate-pulse"
+                  />
+                )}
+
+                {/* Legal capture indicator */}
+                {isLegal && hasPiece && (
+                  <circle
+                    cx={x + 32}
+                    cy={y + 32}
+                    r={26}
+                    fill="none"
+                    stroke="#EF4444"
+                    strokeWidth={4}
+                    opacity={0.85}
+                  />
+                )}
+
+                {/* Piece */}
                 {position[square] && (
-                  <text
-                    x={x + 32}
-                    y={y + 42}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={44}
-                    fontWeight={400}
-                    fill={position[square][0] === 'w' ? '#F8FAFC' : '#0F172A'}
-                    filter="url(#pieceShadow)"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                  >
-                    {pieceSet[position[square] as keyof typeof pieceSet]}
-                  </text>
+                  <g filter="url(#boardPieceShadow)">
+                    <ChessPiece piece={position[square]} x={x} y={y} size={64} />
+                  </g>
                 )}
               </g>
             );
           })
         )}
         
+        {/* Arrows */}
         {arrows.map((arrow, idx) => {
           const fromFile = files.indexOf(arrow.from[0]);
           const fromRank = parseInt(arrow.from[1]) - 1;
@@ -203,9 +254,9 @@ export function ChessBoard({
           const toRank = parseInt(arrow.to[1]) - 1;
           
           const displayFromFile = orientation === 'white' ? fromFile : 7 - fromFile;
-          const displayFromRank = orientation === 'white' ? fromRank : 7 - fromRank;
+          const displayFromRank = orientation === 'white' ? 7 - fromRank : fromRank;
           const displayToFile = orientation === 'white' ? toFile : 7 - toFile;
-          const displayToRank = orientation === 'white' ? toRank : 7 - toRank;
+          const displayToRank = orientation === 'white' ? 7 - toRank : toRank;
           
           const x1 = displayFromFile * 64 + 32;
           const y1 = displayFromRank * 64 + 32;
@@ -217,16 +268,17 @@ export function ChessBoard({
               key={idx}
               d={`M${x1},${y1} L${x2},${y2}`}
               stroke={arrow.color || '#3B82F6'}
-              strokeWidth={4}
+              strokeWidth={5}
+              strokeLinecap="round"
               fill="none"
-              markerEnd="url(#arrowhead)"
-              opacity={0.8}
+              markerEnd="url(#boardArrowhead)"
+              opacity={0.85}
             />
           );
         })}
         
         <defs>
-          <marker id="arrowhead" markerWidth={10} markerHeight={7} refX={9} refY={3.5} orient="auto">
+          <marker id="boardArrowhead" markerWidth={10} markerHeight={7} refX={8} refY={3.5} orient="auto">
             <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6" />
           </marker>
         </defs>
@@ -234,11 +286,11 @@ export function ChessBoard({
 
       {coordinates && (
         <>
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex w-full px-2 -mb-2 justify-between text-xs font-medium text-slate-400 select-none pointer-events-none">
-            {displayFiles.map(f => <span key={f} style={{ width: '64px', textAlign: 'center' }}>{f}</span>)}
+          <div className="absolute bottom-0 left-0 flex w-full justify-between text-[11px] font-semibold text-slate-400/80 px-1 pointer-events-none select-none">
+            {displayFiles.map(f => <span key={f} className="w-1/8 text-center">{f}</span>)}
           </div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex h-full py-2 flex-col justify-between -mr-2 text-xs font-medium text-slate-400 select-none pointer-events-none">
-            {ranks.map(r => <span key={r} style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{r}</span>)}
+          <div className="absolute right-0.5 top-0 flex h-full flex-col justify-between text-[11px] font-semibold text-slate-400/80 py-1 pointer-events-none select-none">
+            {ranks.map(r => <span key={r} className="h-1/8 flex items-center justify-center">{r}</span>)}
           </div>
         </>
       )}
@@ -306,13 +358,13 @@ export function ChessBoardSvg({
 
   return (
     <div 
-      className={cn('relative inline-block rounded-lg shadow-2xl border border-slate-700', className)}
+      className={cn('relative inline-block rounded-xl shadow-2xl border border-slate-700/80 bg-slate-900 select-none overflow-hidden', className)}
       style={{ maxWidth: '640px', width: '100%', aspectRatio: '1 / 1', ...style }}
     >
       <svg viewBox="0 0 512 512" style={{ width: '100%', height: '100%', display: 'block' }}>
         <defs>
-          <filter id="pieceShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="1" dy="2" stdDeviation="1.5" floodColor="#000" floodOpacity="0.3"/>
+          <filter id="svgPieceShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.4"/>
           </filter>
         </defs>
         
@@ -323,7 +375,7 @@ export function ChessBoardSvg({
             const displayRankIdx = orientation === 'white' ? rankIdx : 7 - rankIdx;
             const x = displayFileIdx * 64;
             const y = displayRankIdx * 64;
-            const color = getSquareColor(fileIdx, rank === 8 ? 0 : rank === 1 ? 7 : fileIdx);
+            const color = getSquareColor(fileIdx, 7 - rankIdx);
             const highlight = getHighlight(square);
             
             return (
@@ -334,71 +386,26 @@ export function ChessBoardSvg({
                   width={64}
                   height={64}
                   fill={highlight || color}
-                  rx={highlight ? 4 : 0}
+                  opacity={highlight ? 0.9 : 1}
                 />
                 {position[square] && (
-                  <text
-                    x={x + 32}
-                    y={y + 42}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={44}
-                    fontWeight={400}
-                    fill={position[square][0] === 'w' ? '#F8FAFC' : '#0F172A'}
-                    filter="url(#pieceShadow)"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                  >
-                    {pieceSet[position[square] as keyof typeof pieceSet]}
-                  </text>
+                  <g filter="url(#svgPieceShadow)">
+                    <ChessPiece piece={position[square]} x={x} y={y} size={64} />
+                  </g>
                 )}
               </g>
             );
           })
         )}
-        
-        {arrows.map((arrow, idx) => {
-          const fromFile = files.indexOf(arrow.from[0]);
-          const fromRank = parseInt(arrow.from[1]) - 1;
-          const toFile = files.indexOf(arrow.to[0]);
-          const toRank = parseInt(arrow.to[1]) - 1;
-          
-          const displayFromFile = orientation === 'white' ? fromFile : 7 - fromFile;
-          const displayFromRank = orientation === 'white' ? fromRank : 7 - fromRank;
-          const displayToFile = orientation === 'white' ? toFile : 7 - toFile;
-          const displayToRank = orientation === 'white' ? toRank : 7 - toRank;
-          
-          const x1 = displayFromFile * 64 + 32;
-          const y1 = displayFromRank * 64 + 32;
-          const x2 = displayToFile * 64 + 32;
-          const y2 = displayToRank * 64 + 32;
-          
-          return (
-            <path
-              key={idx}
-              d={`M${x1},${y1} L${x2},${y2}`}
-              stroke={arrow.color || '#3B82F6'}
-              strokeWidth={4}
-              fill="none"
-              markerEnd="url(#arrowhead)"
-              opacity={0.8}
-            />
-          );
-        })}
-        
-        <defs>
-          <marker id="arrowhead" markerWidth={10} markerHeight={7} refX={9} refY={3.5} orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6" />
-          </marker>
-        </defs>
       </svg>
 
       {coordinates && (
         <>
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex w-full px-2 -mb-2 justify-between text-xs font-medium text-slate-400 select-none pointer-events-none">
-            {displayFiles.map(f => <span key={f} style={{ width: '64px', textAlign: 'center' }}>{f}</span>)}
+          <div className="absolute bottom-0 left-0 flex w-full justify-between text-[11px] font-semibold text-slate-400/80 px-1 pointer-events-none select-none">
+            {displayFiles.map(f => <span key={f} className="w-1/8 text-center">{f}</span>)}
           </div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex h-full py-2 flex-col justify-between -mr-2 text-xs font-medium text-slate-400 select-none pointer-events-none">
-            {ranks.map(r => <span key={r} style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{r}</span>)}
+          <div className="absolute right-0.5 top-0 flex h-full flex-col justify-between text-[11px] font-semibold text-slate-400/80 py-1 pointer-events-none select-none">
+            {ranks.map(r => <span key={r} className="h-1/8 flex items-center justify-center">{r}</span>)}
           </div>
         </>
       )}

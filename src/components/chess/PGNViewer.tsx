@@ -13,10 +13,13 @@ import {
   Play, 
   Pause,
   List,
-  X 
+  Download,
+  Check,
+  Zap
 } from 'lucide-react';
 import { ChessBoardSvg } from './ChessBoard';
-import { parsePGN, normalizeFen, DEFAULT_FEN } from '@/lib/chess/pgn-utils';
+import { parsePGN, normalizeFen } from '@/lib/chess/pgn-utils';
+import { playChessSound } from '@/lib/chess/sound';
 import type { ParsedPGN, PGNMove } from '@/types/combination';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -48,8 +51,10 @@ export function PGNViewer({
   const [orientation, setOrientation] = useState<'white' | 'black'>('white');
   const [showCoordinates, setShowCoordinates] = useState(true);
   const [showMoveListPanel, setShowMoveListPanel] = useState(showMoveList);
+  const [copied, setCopied] = useState<string | null>(null);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const chessRef = useRef(new Chess());
+  const activeMoveRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (pgn) {
@@ -91,29 +96,51 @@ export function PGNViewer({
     }
   }, [currentMoveIndex, parsedPGN, onMoveChange]);
 
+  // Auto-scroll to active move
+  useEffect(() => {
+    if (activeMoveRef.current) {
+      activeMoveRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [currentMoveIndex]);
+
   const goToStart = useCallback(() => {
     setCurrentMoveIndex(-1);
     setIsPlaying(false);
+    playChessSound('start');
   }, []);
 
   const goToEnd = useCallback(() => {
-    if (parsedPGN) {
+    if (parsedPGN && parsedPGN.moves.length > 0) {
       setCurrentMoveIndex(parsedPGN.moves.length - 1);
       setIsPlaying(false);
+      playChessSound('move');
     }
   }, [parsedPGN]);
 
   const goToPrev = useCallback(() => {
-    setCurrentMoveIndex(prev => Math.max(-1, prev - 1));
+    setCurrentMoveIndex(prev => {
+      const next = Math.max(-1, prev - 1);
+      playChessSound('move');
+      return next;
+    });
     setIsPlaying(false);
   }, []);
 
   const goToNext = useCallback(() => {
-    if (parsedPGN) {
-      setCurrentMoveIndex(prev => Math.min(parsedPGN.moves.length - 1, prev + 1));
+    if (parsedPGN && currentMoveIndex < parsedPGN.moves.length - 1) {
+      const next = currentMoveIndex + 1;
+      const move = parsedPGN.moves[next];
+      if (move?.san?.includes('x')) {
+        playChessSound('capture');
+      } else if (move?.san?.includes('+') || move?.san?.includes('#')) {
+        playChessSound('check');
+      } else {
+        playChessSound('move');
+      }
+      setCurrentMoveIndex(next);
     }
     setIsPlaying(false);
-  }, [parsedPGN]);
+  }, [parsedPGN, currentMoveIndex]);
 
   const togglePlay = useCallback(() => {
     if (!parsedPGN) return;
@@ -139,7 +166,14 @@ export function PGNViewer({
             setIsPlaying(false);
             return prev;
           }
-          return prev + 1;
+          const nextIdx = prev + 1;
+          const move = parsedPGN.moves[nextIdx];
+          if (move?.san?.includes('x')) {
+            playChessSound('capture');
+          } else {
+            playChessSound('move');
+          }
+          return nextIdx;
         });
       }, autoPlaySpeed);
     }
@@ -149,23 +183,73 @@ export function PGNViewer({
     setOrientation(prev => prev === 'white' ? 'black' : 'white');
   }, []);
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['input', 'textarea'].includes((e.target as HTMLElement)?.tagName?.toLowerCase())) {
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrev();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNext();
+      } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        flipBoard();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToStart();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToEnd();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [goToPrev, goToNext, togglePlay, flipBoard, goToStart, goToEnd]);
+
   const copyPGN = useCallback(() => {
     if (parsedPGN) {
       const fullPGN = generateFullPGN(parsedPGN, currentMoveIndex);
       navigator.clipboard.writeText(fullPGN);
+      setCopied('pgn');
+      setTimeout(() => setCopied(null), 2000);
     } else if (fen) {
       navigator.clipboard.writeText(fen);
+      setCopied('pgn');
+      setTimeout(() => setCopied(null), 2000);
     }
   }, [parsedPGN, currentMoveIndex, fen]);
 
   const copyFEN = useCallback(() => {
     const currentFen = chessRef.current.fen();
     navigator.clipboard.writeText(currentFen);
+    setCopied('fen');
+    setTimeout(() => setCopied(null), 2000);
   }, []);
+
+  const downloadPGN = useCallback(() => {
+    if (!parsedPGN) return;
+    const fullPGN = generateFullPGN(parsedPGN, parsedPGN.moves.length - 1);
+    const blob = new Blob([fullPGN], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${parsedPGN.headers.White || 'game'}_vs_${parsedPGN.headers.Black || 'game'}.pgn`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [parsedPGN]);
 
   const handleMoveClick = useCallback((index: number) => {
     setCurrentMoveIndex(index);
     setIsPlaying(false);
+    playChessSound('move');
   }, []);
 
   const lastMove = parsedPGN && currentMoveIndex >= 0 && currentMoveIndex < parsedPGN.moves.length
@@ -174,35 +258,48 @@ export function PGNViewer({
 
   const highlights: Record<string, string> = {};
   if (lastMove) {
-    const move = chessRef.current.history({ verbose: true })[currentMoveIndex];
+    const history = chessRef.current.history({ verbose: true });
+    const move = history[history.length - 1];
     if (move) {
-      highlights[move.from] = '#2563EB';
-      highlights[move.to] = '#2563EB';
+      highlights[move.from] = '#1D4ED8';
+      highlights[move.to] = '#1D4ED8';
     }
   }
 
+  // Calculate dynamic eval ratio
+  const progressRatio = parsedPGN && parsedPGN.moves.length > 0 
+    ? Math.min(100, Math.max(0, ((currentMoveIndex + 1) / parsedPGN.moves.length) * 100))
+    : 50;
+
   return (
     <div className={cn('flex flex-col gap-4', className)}>
-      <div className="relative">
+      <div className="relative flex items-center justify-center gap-3">
+        {/* Dynamic Eval balance bar */}
+        <div className="hidden sm:flex flex-col h-[320px] w-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60 shadow-inner">
+          <div 
+            className="w-full bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-300"
+            style={{ height: `${progressRatio}%` }}
+          />
+        </div>
+
         <ChessBoardSvg
           fen={chessRef.current.fen()}
           orientation={orientation}
           coordinates={showCoordinates}
           highlights={highlights}
-          lastMove={lastMove ? { from: '', to: '' } : null}
           className="mx-auto"
         />
       </div>
 
       {showControls && (
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 p-2 bg-slate-900/60 border border-slate-800 rounded-xl">
           <Button
             variant="ghost"
             size="icon"
             onClick={goToStart}
             disabled={currentMoveIndex === -1}
-            aria-label="Ir al inicio"
-            className="text-slate-300 hover:text-white disabled:opacity-30"
+            title="Inicio (Home)"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 disabled:opacity-30 h-8 w-8"
           >
             <ChevronsLeft className="h-4 w-4" />
           </Button>
@@ -211,8 +308,8 @@ export function PGNViewer({
             size="icon"
             onClick={goToPrev}
             disabled={currentMoveIndex === -1}
-            aria-label="Jugada anterior"
-            className="text-slate-300 hover:text-white disabled:opacity-30"
+            title="Anterior (←)"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 disabled:opacity-30 h-8 w-8"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -221,18 +318,18 @@ export function PGNViewer({
             size="icon"
             onClick={togglePlay}
             disabled={!parsedPGN || parsedPGN.moves.length === 0}
-            aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
-            className="text-slate-300 hover:text-white disabled:opacity-30"
+            title={isPlaying ? 'Pausar (Space)' : 'Reproducir (Space)'}
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 disabled:opacity-30 h-8 w-8"
           >
-            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            {isPlaying ? <Pause className="h-4 w-4 text-amber-400" /> : <Play className="h-4 w-4 text-blue-400" />}
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={goToNext}
             disabled={!parsedPGN || currentMoveIndex >= parsedPGN.moves.length - 1}
-            aria-label="Siguiente jugada"
-            className="text-slate-300 hover:text-white disabled:opacity-30"
+            title="Siguiente (→)"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 disabled:opacity-30 h-8 w-8"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -241,17 +338,20 @@ export function PGNViewer({
             size="icon"
             onClick={goToEnd}
             disabled={!parsedPGN || currentMoveIndex >= parsedPGN.moves.length - 1}
-            aria-label="Ir al final"
-            className="text-slate-300 hover:text-white disabled:opacity-30"
+            title="Final (End)"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 disabled:opacity-30 h-8 w-8"
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>
+
+          <div className="h-4 w-[1px] bg-slate-700 mx-1" />
+
           <Button
             variant="ghost"
             size="icon"
             onClick={flipBoard}
-            aria-label="Voltear tablero"
-            className="text-slate-300 hover:text-white"
+            title="Girar tablero (F)"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 h-8 w-8"
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
@@ -259,26 +359,27 @@ export function PGNViewer({
             variant="ghost"
             size="icon"
             onClick={copyPGN}
-            aria-label="Copiar PGN"
-            className="text-slate-300 hover:text-white"
+            title="Copiar PGN"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 h-8 w-8"
           >
-            <Copy className="h-4 w-4" />
+            {copied === 'pgn' ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            onClick={copyFEN}
-            aria-label="Copiar FEN"
-            className="text-slate-300 hover:text-white"
+            onClick={downloadPGN}
+            disabled={!parsedPGN}
+            title="Descargar archivo PGN"
+            className="text-slate-300 hover:text-white hover:bg-slate-800/80 h-8 w-8"
           >
-            <Copy className="h-4 w-4" />
+            <Download className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowMoveListPanel(!showMoveListPanel)}
-            aria-label={showMoveListPanel ? 'Ocultar lista de jugadas' : 'Mostrar lista de jugadas'}
-            className="text-slate-300 hover:text-white"
+            title="Alternar lista de jugadas"
+            className={cn('h-8 w-8 text-slate-300 hover:text-white hover:bg-slate-800/80', showMoveListPanel && 'text-blue-400 bg-slate-800/50')}
           >
             <List className="h-4 w-4" />
           </Button>
@@ -286,9 +387,14 @@ export function PGNViewer({
       )}
 
       {showMoveListPanel && parsedPGN && parsedPGN.moves.length > 0 && (
-        <div className="border-t border-slate-800 pt-4">
-          <ScrollArea className="h-48 max-h-[300px]">
-            <div className="grid grid-cols-2 gap-1 font-mono text-sm">
+        <div className="border border-slate-800 bg-slate-900/50 rounded-xl p-3">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-xs text-slate-400 font-medium">
+            <span className="flex items-center gap-1"><Zap className="h-3.5 w-3.5 text-blue-400" /> Notación de la partida</span>
+            <span>{parsedPGN.moves.length} jugadas</span>
+          </div>
+
+          <ScrollArea className="h-44 max-h-[220px]">
+            <div className="grid grid-cols-2 gap-1 font-mono text-xs">
               {parsedPGN.moves.map((move, index) => {
                 const moveNumber = Math.floor(index / 2) + 1;
                 const isWhiteMove = index % 2 === 0;
@@ -297,18 +403,23 @@ export function PGNViewer({
                 return (
                   <button
                     key={index}
+                    ref={isCurrent ? activeMoveRef : null}
                     onClick={() => handleMoveClick(index)}
                     className={cn(
-                      'px-2 py-1 rounded text-left transition-colors',
-                      'hover:bg-slate-800/50',
+                      'px-2.5 py-1.5 rounded-lg text-left transition-all duration-150 flex items-center justify-between',
+                      'hover:bg-slate-800/80',
                       isCurrent 
-                        ? 'bg-blue-500/20 text-blue-300 font-medium' 
+                        ? 'bg-blue-600/30 text-blue-300 font-bold border border-blue-500/40 shadow-sm' 
                         : 'text-slate-300 hover:text-white'
                     )}
-                    style={{ fontFamily: 'ui-monospace, SFMono-Regular, monospace' }}
                   >
-                    {isWhiteMove ? `${moveNumber}. ` : ''}
-                    {move.san}
+                    <span>
+                      {isWhiteMove ? <span className="text-slate-500 mr-1.5">{moveNumber}.</span> : ''}
+                      <span className={cn(move.san.includes('+') || move.san.includes('#') ? 'text-amber-300 font-semibold' : '')}>
+                        {move.san}
+                      </span>
+                    </span>
+                    {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />}
                   </button>
                 );
               })}
@@ -320,7 +431,7 @@ export function PGNViewer({
   );
 }
 
-function generateFullPGN(parsed: ParsedPGN, upToIndex: number): string {
+function generateFullPGN(parsed: ParsedPGN, upToIndex: number = parsed.moves.length): string {
   let pgn = '';
   for (const [key, value] of Object.entries(parsed.headers)) {
     pgn += `[${key} "${value}"]\n`;

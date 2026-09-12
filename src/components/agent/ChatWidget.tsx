@@ -356,25 +356,26 @@ Current combination context:
               <div ref={messagesEndRef} />
             </ScrollArea>
 
-            {showQuickActions && messages.length <= 1 && (
-              <div className="border-t border-slate-800 p-3 space-y-2">
-                <p className="text-xs font-medium text-slate-500 px-2">{t.quickActions}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {QUICK_ACTIONS.map(({ id, label, icon: Icon }) => (
-                    <Button
-                      key={id}
-                      variant="outline"
-                      size="sm"
-                      className="h-auto py-2 px-3 text-left justify-start gap-2 text-xs border-slate-700 hover:border-blue-500/50 hover:bg-blue-500/10"
-                      onClick={() => handleQuickAction(id)}
-                    >
-                      <Icon className="h-3.5 w-3.5 text-slate-400" />
-                      <span>{label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Quick Prompt Pills Bar */}
+            <div className="border-t border-slate-800/80 px-3 py-2 bg-slate-900/60 overflow-x-auto flex items-center gap-1.5 no-scrollbar">
+              {[
+                { id: 'hint', label: '💡 Pista', text: 'Dame una pista para encontrar la mejor jugada sin decirme la solución completa.' },
+                { id: 'tactic', label: '🎯 Táctica', text: 'Explica las ideas y temas tácticos principales de esta posición.' },
+                { id: 'art', label: '🎨 Arte', text: '¿Cómo representa la ilustración artística el drama y la táctica de esta combinación?' },
+                { id: 'history', label: '📜 Historia', text: 'Cuéntame la historia y el contexto del torneo de esta inmortal partida.' },
+                { id: 'simple', label: '👶 Explicar fácil', text: 'Explícame la posición de manera muy sencilla como para un jugador aficionado.' },
+              ].map(pill => (
+                <button
+                  key={pill.id}
+                  type="button"
+                  onClick={() => sendMessage(pill.text, true)}
+                  disabled={isLoading}
+                  className="flex-shrink-0 px-2.5 py-1 text-xs rounded-full bg-slate-800/80 hover:bg-blue-600/20 text-slate-300 hover:text-blue-300 border border-slate-700/60 hover:border-blue-500/40 transition-colors disabled:opacity-40"
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
 
             <form onSubmit={handleSubmit} className="border-t border-slate-800 p-3 bg-slate-900/50">
               <div className="flex gap-2">

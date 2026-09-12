@@ -27,6 +27,9 @@ import type { Combination } from '@/types/combination';
 import { DIFFICULTY_COLORS } from '@/lib/chess/pgn-utils';
 import { getTranslations, t } from '@/lib/i18n';
 
+import { PuzzleSolver } from '@/components/chess/PuzzleSolver';
+import { ChessBoardSvg } from '@/components/chess/ChessBoard';
+
 const DIFFICULTY_LABELS_ES: Record<string, string> = {
   Beginner: 'Principiante', Easy: 'Fácil', Intermediate: 'Intermedio',
   Advanced: 'Avanzado', Expert: 'Experto', Master: 'Maestro',
@@ -38,7 +41,10 @@ interface CombinationDetailClientProps {
 
 export function CombinationDetailClient({ combination }: CombinationDetailClientProps) {
   const [locale, setLocale] = useState<'es' | 'en'>('es');
-  const [activeTab, setActiveTab] = useState<'board' | 'artwork' | 'analysis'>('board');
+  const [activeTab, setActiveTab] = useState<'solve' | 'pgn' | 'analysis'>('solve');
+  const [viewArtworkMode, setViewArtworkMode] = useState<'art' | 'diagram'>(
+    combination.artwork_url ? 'art' : 'diagram'
+  );
   const [relatedCombinations, setRelatedCombinations] = useState<Combination[]>([]);
   const [showFullArtwork, setShowFullArtwork] = useState(false);
   
@@ -111,7 +117,9 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
           {/* Header Info */}
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs font-mono text-blue-400">{formatNumber(combination.number)}</span>
+              <span className="text-xs font-mono text-blue-400 font-bold px-2 py-0.5 bg-blue-500/10 rounded-md border border-blue-500/30">
+                {formatNumber(combination.number)}
+              </span>
               <Badge variant="outline" className={cn(difficultyColor, 'text-xs')}>
                 {difficultyLabel}
               </Badge>
@@ -130,81 +138,119 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
               {combination.title}
             </h1>
             <div className="flex flex-wrap items-center gap-4 text-slate-400 text-sm">
-              <span className="flex items-center gap-1">
-                <Trophy className="h-4 w-4" />
+              <span className="flex items-center gap-1.5 font-medium text-slate-300">
+                <Trophy className="h-4 w-4 text-amber-400" />
                 {combination.white_player} vs {combination.black_player}
               </span>
-              <span className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
+              <span className="flex items-center gap-1.5">
+                <Calendar className="h-4 w-4 text-blue-400" />
                 {combination.event} · {combination.year}
               </span>
-              <span className="flex items-center gap-1">
-                <Brain className="h-4 w-4" />
+              <span className="flex items-center gap-1.5">
+                <Brain className="h-4 w-4 text-emerald-400" />
                 {combination.result}
               </span>
             </div>
           </div>
 
-          {/* Main Content: Artwork + Board */}
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Artwork Panel */}
+          {/* Main Content: Artwork/Diagram + Interactive Training / PGN */}
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            {/* Left Column: Artwork or High-Res Diagram */}
             <div className="space-y-4">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-900 border border-slate-800">
-                {combination.artwork_url ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Palette className="h-4 w-4 text-purple-400" />
+                  <span className="text-sm font-semibold text-slate-200">
+                    {viewArtworkMode === 'art' ? 'Ilustración Artística' : 'Diagrama Vectorial 2D'}
+                  </span>
+                </div>
+                {combination.artwork_url && (
+                  <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs">
+                    <button
+                      onClick={() => setViewArtworkMode('art')}
+                      className={cn(
+                        'px-2.5 py-1 rounded-md transition-colors',
+                        viewArtworkMode === 'art' ? 'bg-purple-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+                      )}
+                    >
+                      Arte
+                    </button>
+                    <button
+                      onClick={() => setViewArtworkMode('diagram')}
+                      className={cn(
+                        'px-2.5 py-1 rounded-md transition-colors',
+                        viewArtworkMode === 'diagram' ? 'bg-blue-600 text-white font-medium' : 'text-slate-400 hover:text-white'
+                      )}
+                    >
+                      Diagrama
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {viewArtworkMode === 'art' && combination.artwork_url ? (
+                <div className="relative aspect-square sm:aspect-[4/3] rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-xl">
                   <button
                     onClick={() => setShowFullArtwork(true)}
-                    className="w-full h-full relative"
+                    className="w-full h-full relative group"
                     aria-label="Ver ilustración a pantalla completa"
                   >
                     <img
                       src={combination.artwork_url}
                       alt={combination.title}
-                      className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 right-4 opacity-0 hover:opacity-100 transition-opacity">
-                      <Button variant="default" size="icon" className="bg-white/10 backdrop-blur">
-                        <Palette className="h-4 w-4" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="default" size="sm" className="bg-white/10 backdrop-blur border border-white/20 text-white text-xs">
+                        <Palette className="h-3.5 w-3.5 mr-1" />
+                        Ampliar Arte
                       </Button>
                     </div>
                   </button>
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-slate-500">
-                    <Palette className="h-16 w-16" />
-                    <p>Ilustración no disponible</p>
-                    <p className="text-xs">Próximamente: arte de Pablo Iglesias</p>
+                </div>
+              ) : (
+                <div className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl flex flex-col items-center justify-center shadow-xl">
+                  <ChessBoardSvg
+                    fen={combination.fen}
+                    className="w-full max-w-[420px] aspect-square"
+                  />
+                  <div className="mt-3 flex items-center justify-between w-full px-2 text-xs text-slate-400">
+                    <span>Posición del reto</span>
+                    <span className="font-mono text-slate-500 text-[10px] truncate max-w-[200px]">{combination.fen}</span>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
               
               {combination.artist_notes && (
-                <div className="p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl">
-                  <div className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
-                    <Palette className="h-4 w-4 text-blue-400" />
-                    <span>{locale === 'es' ? 'Notas del artista' : 'Artist notes'}</span>
+                <div className="p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
+                    <Palette className="h-4 w-4 text-purple-400" />
+                    <span>{locale === 'es' ? 'Notas del artista Pablo Iglesias' : 'Artist notes'}</span>
                   </div>
                   <p className="text-slate-400 text-sm leading-relaxed">{combination.artist_notes}</p>
                 </div>
               )}
             </div>
 
-            {/* Board Panel */}
+            {/* Right Column: Interactive Mode Tabs */}
             <div className="space-y-4">
-              <div role="tablist" className="flex border-b border-slate-800">
+              <div role="tablist" className="flex border-b border-slate-800 gap-2">
                 {[
-                  { id: 'board', label: locale === 'es' ? 'Tablero' : 'Board', icon: Brain },
-                  { id: 'analysis', label: locale === 'es' ? 'Análisis' : 'Analysis', icon: BookOpen },
+                  { id: 'solve', label: locale === 'es' ? '🎯 Resolver' : '🎯 Solve', icon: Brain },
+                  { id: 'pgn', label: locale === 'es' ? '♟️ Visor PGN' : '♟️ PGN Viewer', icon: BookOpen },
+                  { id: 'analysis', label: locale === 'es' ? '🧠 Análisis' : '🧠 Analysis', icon: Trophy },
                 ].map(tab => (
                   <button
                     key={tab.id}
                     role="tab"
                     aria-selected={activeTab === tab.id}
-                    onClick={() => setActiveTab(tab.id as 'board' | 'analysis')}
+                    onClick={() => setActiveTab(tab.id as 'solve' | 'pgn' | 'analysis')}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors',
+                      'flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 -mb-px transition-all',
                       activeTab === tab.id
-                        ? 'border-blue-500 text-blue-400'
-                        : 'border-transparent text-slate-500 hover:text-slate-300'
+                        ? 'border-blue-500 text-blue-400 bg-blue-500/5 rounded-t-lg'
+                        : 'border-transparent text-slate-500 hover:text-slate-300 hover:border-slate-700'
                     )}
                   >
                     <tab.icon className="h-4 w-4" />
@@ -213,8 +259,15 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
                 ))}
               </div>
 
-              <div role="tabpanel" className="pt-4">
-                {activeTab === 'board' && (
+              <div role="tabpanel" className="pt-2">
+                {activeTab === 'solve' && (
+                  <PuzzleSolver
+                    combination={combination}
+                    locale={locale}
+                  />
+                )}
+
+                {activeTab === 'pgn' && (
                   <PGNViewer
                     pgn={combination.pgn}
                     initialFen={combination.fen}
@@ -226,25 +279,41 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
                 
                 {activeTab === 'analysis' && (
                   <div className="space-y-4">
-                    <div className="p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl">
-                      <h3 className="font-medium text-white mb-3">
-                        {locale === 'es' ? 'Descripción' : 'Description'}
+                    <div className="p-5 bg-slate-900/60 border border-slate-800 rounded-xl space-y-2">
+                      <h3 className="font-semibold text-white flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-blue-400" />
+                        {locale === 'es' ? 'Resumen Histórico y Contexto' : 'Historical Context'}
                       </h3>
-                      <p className="text-slate-400 leading-relaxed">
-                        {combination.description || (locale === 'es' ? 'Sin descripción disponible.' : 'No description available.')}
+                      <p className="text-slate-300 text-sm leading-relaxed">
+                        {combination.description || (locale === 'es' ? 'Una de las combinaciones maestras más memorables de la historia del ajedrez.' : 'One of the most memorable chess masterpieces in history.')}
                       </p>
                     </div>
                     
-                    <div className="p-4 bg-slate-900/50 border border-slate-700/50 rounded-xl">
-                      <h3 className="font-medium text-white mb-3">
-                        {locale === 'es' ? 'Ideas tácticas clave' : 'Key Tactical Ideas'}
+                    <div className="p-5 bg-slate-900/60 border border-slate-800 rounded-xl space-y-3">
+                      <h3 className="font-semibold text-white flex items-center gap-2">
+                        <Brain className="h-4 w-4 text-amber-400" />
+                        {locale === 'es' ? 'Conceptos Tácticos Clave' : 'Key Tactical Ideas'}
                       </h3>
-                      <ul className="space-y-2 text-slate-400 text-sm">
-                        <li className="flex items-start gap-2">• Sacrificio de material por iniciativa</li>
-                        <li className="flex items-start gap-2">• Coordinación de piezas menores</li>
-                        <li className="flex items-start gap-2">• Mate en el centro del tablero</li>
-                        <li className="flex items-start gap-2">• Desarrollo rápido y control central</li>
+                      <ul className="space-y-2 text-slate-300 text-sm">
+                        <li className="flex items-start gap-2">
+                          <span className="text-blue-400 font-bold">•</span>
+                          <span><strong>Patrón táctico:</strong> {combination.category || 'Ataque directo al rey'}</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-purple-400 font-bold">•</span>
+                          <span><strong>Apertura vinculada:</strong> {combination.opening || 'Juego abierto / dinámico'}</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-emerald-400 font-bold">•</span>
+                          <span><strong>Resultado:</strong> {combination.result} ({combination.white_player} vs {combination.black_player})</span>
+                        </li>
                       </ul>
+                    </div>
+
+                    <div className="p-4 bg-blue-950/30 border border-blue-800/40 rounded-xl flex items-center justify-between">
+                      <div className="text-xs text-blue-300">
+                        ¿Quieres profundizar en las variantes? Usa el <strong>Chess AI Coach</strong> en la esquina inferior.
+                      </div>
                     </div>
                   </div>
                 )}
