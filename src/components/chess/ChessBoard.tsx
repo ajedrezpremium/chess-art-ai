@@ -9,6 +9,18 @@ const CREAM_LIGHT_SQUARE = '#E2E8F0';
 const HIGHLIGHT_COLOR = '#3B82F6';
 const LAST_MOVE_COLOR = '#2563EB';
 
+const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+function normalizeFen(fen?: string): string {
+  if (!fen || typeof fen !== 'string') return DEFAULT_FEN;
+  const fields = fen.trim().split(/\s+/);
+  if (fields.length !== 6) {
+    console.warn('[ChessBoard] Invalid FEN, using default:', fen);
+    return DEFAULT_FEN;
+  }
+  return fields.join(' ');
+}
+
 const pieceSet: Record<string, string> = {
   wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
   bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟',
@@ -43,7 +55,8 @@ export function ChessBoard({
   className,
   style,
 }: ChessBoardProps) {
-  const [chess] = useState(() => new Chess(fen));
+  const safeFen = normalizeFen(fen);
+  const [chess] = useState(() => new Chess(safeFen));
   const [position, setPosition] = useState<Record<string, string>>({});
   const [animationKey, setAnimationKey] = useState(0);
   const chessRef = useRef(chess);
