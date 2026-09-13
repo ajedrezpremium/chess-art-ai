@@ -408,6 +408,7 @@ Current combination context:
       </AnimatePresence>
 
       <motion.button
+        id="agent-toggle"
         onClick={() => setIsOpen(true)}
         initial={{ scale: 1 }}
         whileHover={{ scale: 1.05 }}
@@ -427,11 +428,12 @@ Current combination context:
       </motion.button>
 
       <motion.button
+        id="agent-toggle"
         onClick={() => setIsOpen(true)}
         initial={{ scale: 1 }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="hidden lg:fixed bottom-6 right-6 z-40 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
+        className="fixed bottom-6 right-6 z-40 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
         aria-label="Abrir chat con Chess AI"
       >
         <div className="relative">

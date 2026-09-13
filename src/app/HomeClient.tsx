@@ -54,7 +54,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
   return (
     <div className="min-h-screen bg-chess-bg">
       {/* Header */}
-      <Header locale={locale} />
+      <Header />
 
       <main className="pt-20 lg:pt-24">
         {/* Hero Section */}

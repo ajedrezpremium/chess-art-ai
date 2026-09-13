@@ -22,7 +22,7 @@ export default function VisorPage() {
 
   return (
     <div className="min-h-screen bg-chess-bg">
-      <Header locale={locale} />
+      <Header />
       
       <main className="pt-20 lg:pt-24">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-12">

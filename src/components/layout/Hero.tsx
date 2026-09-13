@@ -90,13 +90,6 @@ export function Hero({ locale = 'es' }: HeroProps) {
               Explorar el Top 100
             </Button>
           </Link>
-          <button 
-            className="btn-secondary w-full sm:w-auto"
-            onClick={() => document.getElementById('agent-toggle')?.click()}
-          >
-            <Sparkles className="h-5 w-5" />
-            Hablar con el Agente IA
-          </button>
         </motion.div>
 
         {/* Stats */}

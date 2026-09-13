@@ -55,7 +55,7 @@ export function CombinationGalleryClient({ initialCombinations }: CombinationGal
 
   return (
     <div className="min-h-screen bg-chess-bg">
-      <Header locale={locale} />
+      <Header />
       
       <main className="pt-20 lg:pt-24">
         <motion.div
