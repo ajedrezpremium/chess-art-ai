@@ -95,7 +95,7 @@ export function Header({ locale = 'es' }: HeaderProps) {
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" align="center" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                      {t[item.tooltipKey]}
+                      {t[item.tooltipKey] as string}
                     </TooltipContent>
                   </Tooltip>
                 );

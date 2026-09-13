@@ -7,7 +7,9 @@
       "art": "Art",
       "books": "Books",
       "cinema": "Cinema",
-      "music": "Music"
+      "music": "Music",
+      "gallery": "Gallery",
+      "pgn": "PGN Viewer"
     },
     "language": "Language"
   },
