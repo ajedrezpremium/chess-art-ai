@@ -1,25 +1,65 @@
 {
-  "nav": {
-    "home": "Inicio",
-    "top100": "Top 100",
-    "pgn": "Visor PGN",
-    "about": "Acerca de",
-    "play": "Jugar",
-    "train": "Entrenar"
+  "header": {
+    "logo": "CHESS ART",
+    "ai": "AI",
+    "nav": {
+      "chess": "Ajedrez",
+      "art": "Arte",
+      "books": "Libros",
+      "cinema": "Cine",
+      "music": "Música"
+    },
+    "language": "Idioma"
   },
   "hero": {
-    "title1": "AJEDREZ.",
-    "title2": "ARTE.",
-    "title3": "INTELIGENCIA.",
-    "subtitle": "Descubre las mejores combinaciones de la historia a través del arte, el ajedrez interactivo y la inteligencia artificial.",
-    "ctaPrimary": "EXPLORAR TOP 100",
-    "ctaSecondary": "JUGAR AJEDREZ"
+    "title1": "Donde el ajedrez",
+    "title2": "se convierte en",
+    "title3": "arte",
+    "subtitle": "Primera exposición: Explora las 100 mejores combinaciones de la historia a través de ilustraciones artísticas, análisis interactivo y un agente IA experto que te guía en cada posición.",
+    "ctaPrimary": "Explorar el Top 100",
+    "ctaSecondary": "Hablar con el Agente IA",
+    "stats": {
+      "chess": "Combinaciones",
+      "art": "Ilustraciones",
+      "ai": "Análisis IA",
+      "artist": "Artista"
+    }
+  },
+  "nav": {
+    "chess": "Ajedrez",
+    "art": "Arte",
+    "books": "Libros",
+    "cinema": "Cine",
+    "music": "Música",
+    "gallery": "Galería",
+    "pgn": "Visor PGN"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "contact": "Contacto"
+  },
+  "combinations": {
+    "title": "TOP 100 COMBINACIONES",
+    "subtitle": "Las mejores combinaciones de la historia del ajedrez, ilustradas artísticamente",
+    "search": "Buscar combinaciones...",
+    "filters": "Filtros",
+    "difficulty": "Dificultad",
+    "year": "Año",
+    "category": "Categoría",
+    "player": "Jugador",
+    "noResults": "No se encontraron combinaciones",
+    "loadMore": "Cargar más",
+    "showing": "Mostrando",
+    "of": "de",
+    "combinations": "combinaciones"
   },
   "combination": {
     "number": "Combinación",
     "title": "Título",
     "players": "Jugadores",
-    "event": "Torneo",
+    "event": "Evento",
     "year": "Año",
     "difficulty": "Dificultad",
     "result": "Resultado",
@@ -28,10 +68,8 @@
     "description": "Descripción",
     "artwork": "Ilustración",
     "board": "Tablero",
-    "solution": "Solución",
     "analysis": "Análisis",
-    "aiExplanation": "Explicación IA",
-    "related": "Combinaciones Relacionadas",
+    "related": "Combinaciones relacionadas",
     "play": "JUGAR",
     "solve": "RESOLVER",
     "reveal": "REVELAR",
@@ -45,18 +83,6 @@
     "Expert": "Experto",
     "Master": "Maestro"
   },
-  "gallery": {
-    "title": "TOP 100 COMBINACIONES",
-    "subtitle": "Las combinaciones más brillantes de la historia del ajedrez, ilustradas artísticamente",
-    "search": "Buscar combinaciones...",
-    "filter": "Filtros",
-    "filterByPlayer": "Por jugador",
-    "filterByYear": "Por año",
-    "filterByDifficulty": "Por dificultad",
-    "filterByCategory": "Por categoría",
-    "noResults": "No se encontraron combinaciones",
-    "loadMore": "Cargar más"
-  },
   "pgnViewer": {
     "title": "Visor PGN",
     "subtitle": "Analiza cualquier partida pegando su PGN",
@@ -69,23 +95,18 @@
     "flipBoard": "Voltear tablero",
     "coordinates": "Coordenadas"
   },
-  "artist": {
-    "name": "Pablo Iglesias",
-    "title": "Artista de la serie Top 100",
-    "bio": "Artista visual especializado en la intersección entre ajedrez y arte. Su serie 'Top 100 Combinaciones de la Historia' transforma posiciones ajedrecísticas icónicas en obras de arte que capturan la tensión, el sacrificio y la belleza de cada momento decisivo.",
-    "contact": "Contactar para colaboraciones",
-    "email": "pablo.iglesias@chessart.ai",
-    "portfolio": "Ver portafolio",
-    "social": "Redes sociales"
+  "gallery": {
+    "title": "GALERÍA",
+    "subtitle": "Explora la colección completa de ilustraciones",
+    "cta": "Ver galería completa"
   },
-  "footer": {
-    "rights": "Todos los derechos reservados",
-    "privacy": "Privacidad",
-    "terms": "Términos",
-    "contact": "Contacto"
+  "pgn": {
+    "title": "VISOR PGN",
+    "subtitle": "Analiza cualquier partida pegando su PGN",
+    "cta": "Abrir visor"
   },
   "ai": {
-    "title": "Chess AI",
+    "title": "Agente IA",
     "placeholder": "Pregunta sobre ajedrez, arte o la combinación actual...",
     "thinking": "Pensando...",
     "welcome": "¡Hola! Soy tu asistente de Chess Art & AI Academy.",
@@ -95,5 +116,14 @@
     "combinations": "📖 Combinaciones históricas del Top 100",
     "analysis": "📊 Análisis de posiciones y partidas",
     "training": "🧠 Entrenamiento y ejercicios"
+  },
+  "artist": {
+    "name": "Pablo Iglesias",
+    "title": "Artista de la serie Top 100",
+    "bio": "Artista visual especializado en la intersección entre ajedrez y arte contemporáneo. Su serie 'Top 100 Combinaciones de la Historia' transforma posiciones ajedrecísticas icónicas en obras de arte que capturan la tensión, el sacrificio y la belleza de cada momento decisivo.",
+    "contact": "Contactar para colaboraciones",
+    "email": "pablo.iglesias@chessart.ai",
+    "portfolio": "Ver portafolio",
+    "social": "Redes sociales"
   }
 }

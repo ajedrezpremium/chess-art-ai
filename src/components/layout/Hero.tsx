@@ -2,39 +2,22 @@
 
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Bot, Brain, Palette, ChessRook } from 'lucide-react';
+import { ArrowRight, Sparkles, ChessRook, Palette, Brain } from 'lucide-react';
 import Link from 'next/link';
+import { getTranslations } from '@/lib/i18n';
 
 interface HeroProps {
   locale?: 'es' | 'en';
 }
 
 export function Hero({ locale = 'es' }: HeroProps) {
+  const t = getTranslations(locale);
   const stats = [
-    { label: locale === 'es' ? 'Combinaciones' : 'Combinations', value: '100', icon: ChessRook },
-    { label: locale === 'es' ? 'Ilustraciones' : 'Artworks', value: '100', icon: Palette },
-    { label: locale === 'es' ? 'Análisis IA' : 'AI Analysis', value: '∞', icon: Brain },
-    { label: locale === 'es' ? 'Artista' : 'Artist', value: '1', icon: Sparkles },
+    { key: 'chess', label: t.hero.stats?.chess || 'Combinaciones', value: '100', icon: ChessRook },
+    { key: 'art', label: t.hero.stats?.art || 'Ilustraciones', value: '100', icon: Palette },
+    { key: 'ai', label: t.hero.stats?.ai || 'Análisis IA', value: '∞', icon: Brain },
+    { key: 'artist', label: t.hero.stats?.artist || 'Artista', value: '1', icon: Sparkles },
   ];
-  const t = locale === 'es' ? {
-    title1: 'Donde el ajedrez',
-    title2: 'se convierte en',
-    title3: 'arte',
-    subtitle: 'Explora las 100 mejores combinaciones de la historia a través de ilustraciones artísticas, análisis interactivo y un agente IA experto que te guía en cada posición.',
-    ctaPrimary: 'Explorar el Top 100',
-    ctaSecondary: 'Hablar con el Agente IA',
-    featuredCombo: 'Combinación destacada',
-    statsLabel: 'Lo que encontrarás',
-  } : {
-    title1: 'Where chess',
-    title2: 'becomes',
-    title3: 'art',
-    subtitle: 'Explore the 100 greatest combinations in history through artistic illustrations, interactive analysis, and an expert AI agent guiding you through every position.',
-    ctaPrimary: 'Explore Top 100',
-    ctaSecondary: 'Chat with AI Agent',
-    featuredCombo: 'Featured Combination',
-    statsLabel: 'What you\'ll find',
-  };
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -69,7 +52,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
       {/* Decorative chess board pattern overlay */}
       <div className="absolute inset-0 chess-pattern opacity-30 pointer-events-none" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-8 lg:px-12 pt-28">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-8 lg:px-12 pt-32">
         {/* Main Title - LARGER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -77,10 +60,10 @@ export function Hero({ locale = 'es' }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
           className="mb-6 space-y-1"
         >
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight">
-            <span className="block">{t.title1}</span>
-            <span className="block gradient-text-gold">{t.title2}</span>
-            <span className="block gradient-text-gold">{t.title3}</span>
+          <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
+            <span className="block">{t.hero.title1}</span>
+            <span className="block gradient-text-gold">{t.hero.title2}</span>
+            <span className="block gradient-text-gold">{t.hero.title3}</span>
           </h1>
         </motion.div>
 
@@ -91,7 +74,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.35, ease: [0.19, 1, 0.22, 1] }}
           className="max-w-4xl text-xl md:text-2xl lg:text-3xl text-chess-text-secondary leading-relaxed font-light"
         >
-          {t.subtitle}
+          {t.hero.subtitle}
         </motion.p>
 
         {/* CTAs */}
@@ -104,16 +87,16 @@ export function Hero({ locale = 'es' }: HeroProps) {
           <Link href="/combinaciones">
             <Button className="btn-primary group w-full sm:w-auto" size="lg">
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              {locale === 'es' ? 'Explorar el Top 100' : 'Explore Top 100'}
+              Explorar el Top 100
             </Button>
           </Link>
-          <Button 
+          <button 
             className="btn-secondary w-full sm:w-auto"
             onClick={() => document.getElementById('agent-toggle')?.click()}
           >
-            <Bot className="h-5 w-5" />
-            {locale === 'es' ? 'Hablar con el Agente IA' : 'Chat with AI Agent'}
-          </Button>
+            <Sparkles className="h-5 w-5" />
+            Hablar con el Agente IA
+          </button>
         </motion.div>
 
         {/* Stats */}
@@ -125,7 +108,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
         >
           {stats.map((stat, i) => (
             <motion.div
-              key={stat.label}
+              key={stat.key}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 + i * 0.1, ease: [0.19, 1, 0.22, 1] }}

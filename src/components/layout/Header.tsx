@@ -4,17 +4,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Menu, X, Palette, BookOpen, Film, Image, Music, Globe, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { getTranslations } from '@/lib/i18n';
 
-const navItems = [
-  { href: '/combinaciones', label: { es: 'Ajedrez', en: 'Chess' }, icon: Palette, tooltip: { es: 'Ver las 100 mejores combinaciones', en: 'View top 100 combinations' } },
-  { href: '/arte', label: { es: 'Arte', en: 'Art' }, icon: Image, tooltip: { es: 'Galería de ilustraciones', en: 'Artwork gallery' } },
-  { href: '/libros', label: { es: 'Libros', en: 'Books' }, icon: BookOpen, tooltip: { es: 'Libros de ajedrez', en: 'Chess books' } },
-  { href: '/cine', label: { es: 'Cine', en: 'Cinema' }, icon: Film, tooltip: { es: 'Ajedrez en el cine', en: 'Chess in cinema' } },
-  { href: '/musica', label: { es: 'Música', en: 'Music' }, icon: Music, tooltip: { es: 'Ajedrez y música', en: 'Chess & music' } },
+const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' | 'music'; icon: typeof Palette; tooltipKey: string }> = [
+  { href: '/combinaciones', key: 'chess', icon: Palette, tooltipKey: 'header.nav.chess' },
+  { href: '/arte', key: 'art', icon: Image, tooltipKey: 'header.nav.art' },
+  { href: '/libros', key: 'books', icon: BookOpen, tooltipKey: 'header.nav.books' },
+  { href: '/cine', key: 'cinema', icon: Film, tooltipKey: 'header.nav.cinema' },
+  { href: '/musica', key: 'music', icon: Music, tooltipKey: 'header.nav.music' },
 ];
 
 const languages = [
@@ -24,10 +24,9 @@ const languages = [
 
 interface HeaderProps {
   locale?: 'es' | 'en';
-  onLocaleChange?: (locale: 'es' | 'en') => void;
 }
 
-export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
+export function Header({ locale = 'es' }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
@@ -39,18 +38,7 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const t = locale === 'es' ? {
-    nav: navItems.map(i => i.label.es),
-    language: 'Idioma',
-  } : {
-    nav: navItems.map(i => i.label.en),
-    language: 'Language',
-  };
-
-  const handleLocaleChange = (newLocale: 'es' | 'en') => {
-    window.dispatchEvent(new CustomEvent('toggle-language', { detail: newLocale }));
-    setIsLangMenuOpen(false);
-  };
+  const t = getTranslations(locale);
 
   return (
     <TooltipProvider>
@@ -58,20 +46,15 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-        className={cn(
-          'fixed top-0 left-0 right-0 z-40 transition-all duration-300',
-          isScrolled
-            ? 'bg-chess-bg/95 backdrop-blur-2xl border-b border-chess-border/50 shadow-medium'
-            : 'bg-transparent'
-        )}
+        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-chess-bg/95 backdrop-blur-2xl border-b border-chess-border/50"
       >
         <nav className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" aria-label="Main navigation">
           <div className="flex items-center justify-between h-18 lg:h-20">
-            {/* Logo + Name in one row */}
+            {/* Logo */}
             <Link 
               href="/" 
               className="flex items-center gap-3 font-display text-xl md:text-2xl font-semibold text-chess-text-primary tracking-tight z-50"
-              aria-label="Chess Art & AI Academy - Home"
+              aria-label="CHESS ART"
             >
               <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-chess-gold to-chess-gold-light">
                 <span className="text-chess-bg font-bold text-lg">♟</span>
@@ -95,16 +78,13 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                     <TooltipTrigger>
                       <Link
                         href={item.href}
-                        className={cn(
-                          'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200',
-                          isActive
-                            ? 'text-chess-gold bg-chess-gold/10'
-                            : 'text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50'
-                        )}
+                        className={isActive
+                          ? 'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-chess-gold bg-chess-gold/10 transition-all duration-200'
+                          : 'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50 transition-all duration-200'}
                         aria-current={isActive ? 'page' : undefined}
                       >
                         <Icon className="h-4 w-4 transition-transform hover:scale-110" aria-hidden="true" />
-                        <span>{t.nav[navItems.indexOf(item)]}</span>
+                        <span>{t.nav[item.key as keyof typeof t.nav]}</span>
                         {isActive && (
                           <motion.div
                             layoutId="nav-indicator"
@@ -115,7 +95,7 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" align="center" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                      {item.tooltip[locale]}
+                      {t[item.tooltipKey]}
                     </TooltipContent>
                   </Tooltip>
                 );
@@ -128,22 +108,20 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
               <div className="relative">
                 <Tooltip>
                   <TooltipTrigger>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <button
                       className="h-10 w-10 sm:w-auto px-3 rounded-xl text-chess-text-secondary hover:text-chess-gold hover:bg-chess-surface-elevated/50 transition-all duration-200 flex items-center gap-2"
                       onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                      aria-label={locale === 'es' ? 'Idioma' : 'Language'}
+                      aria-label={getTranslations('es').header.language}
                       aria-expanded={isLangMenuOpen}
                       aria-haspopup="listbox"
                     >
                       <span className="text-lg" aria-hidden="true">{languages.find(l => l.code === locale)?.flag}</span>
                       <span className="hidden sm:inline font-medium text-sm">{languages.find(l => l.code === locale)?.short}</span>
-                      <ChevronDown className={cn('h-4 w-4 transition-transform', isLangMenuOpen && 'rotate-180')} />
-                    </Button>
+                      <ChevronDown className="h-4 w-4 transition-transform" />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" align="end" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                    {locale === 'es' ? 'Idioma' : 'Language'}
+                    {getTranslations('es').header.language}
                   </TooltipContent>
                 </Tooltip>
 
@@ -156,7 +134,7 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                       transition={{ duration: 0.2, ease: [0.19, 1, 0.22, 1] }}
                       className="absolute right-0 mt-2 w-40 glass-strong rounded-xl py-2 shadow-strong border border-chess-border/50 z-50"
                       role="listbox"
-                      aria-label={locale === 'es' ? 'Idioma' : 'Language'}
+                      aria-label={getTranslations('es').header.language}
                     >
                       {languages.map(lang => (
                         <button
@@ -165,14 +143,9 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                             window.dispatchEvent(new CustomEvent('toggle-language', { detail: lang.code }));
                             setIsLangMenuOpen(false);
                           }}
-                          className={cn(
-                            'w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
-                            locale === lang.code
-                              ? 'text-chess-gold bg-chess-gold/10'
-                              : 'text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50'
-                          )}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150"
                           role="option"
-                          aria-selected={locale === lang.code}
+                          aria-selected="false"
                         >
                           <span className="text-lg" aria-hidden="true">{lang.flag}</span>
                           <span className="font-medium">{lang.label}</span>
@@ -185,9 +158,7 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
               </div>
 
               {/* Mobile menu button */}
-              <Button
-                variant="ghost"
-                size="icon"
+              <button
                 className="lg:hidden h-10 w-10 rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
@@ -216,7 +187,7 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -239,19 +210,24 @@ export function Header({ locale = 'es', onLocaleChange }: HeaderProps) {
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={cn(
-                          'flex items-center gap-3 px-4 py-3.5 text-body-md font-medium rounded-xl transition-all duration-200',
-                          isActive
-                            ? 'text-chess-gold bg-chess-gold/10'
-                            : 'text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50'
-                        )}
+                        className={isActive
+                          ? 'flex items-center gap-3 px-4 py-3.5 text-body-md font-medium rounded-xl text-chess-gold bg-chess-gold/10 transition-all duration-200'
+                          : 'flex items-center gap-3 px-4 py-3.5 text-body-md font-medium rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50 transition-all duration-200'}
                         aria-current={isActive ? 'page' : undefined}
                       >
                         <Icon className="h-5 w-5" aria-hidden="true" />
-                        <span>{t.nav[navItems.indexOf(item)]}</span>
+                        <span>{t.nav[item.key as keyof typeof t.nav]}</span>
                       </Link>
                     );
                   })}
+                  <div className="pt-2 border-t border-chess-border/30" />
+                  <a
+                    href="/combinaciones"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-chess-violet to-chess-violet-light text-chess-bg font-semibold rounded-xl transition-all duration-200"
+                  >
+                    <span className="h-5 w-5">🤖</span>
+                    {t.hero.ctaSecondary || 'Hablar con el Agente IA'}
+                  </a>
                 </div>
               </motion.div>
             )}
