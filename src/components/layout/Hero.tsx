@@ -52,7 +52,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
       {/* Decorative chess board pattern overlay */}
       <div className="absolute inset-0 chess-pattern opacity-30 pointer-events-none" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-8 lg:px-12 pt-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-8 lg:px-12 pt-40">
         {/* Main Title - LARGER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

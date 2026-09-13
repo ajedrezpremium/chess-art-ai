@@ -34,6 +34,14 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
   const [relatedCombinations, setRelatedCombinations] = useState<Combination[]>([]);
   const [showFullArtwork, setShowFullArtwork] = useState(false);
 
+  useEffect(() => {
+    const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
+      setLocale(e.detail);
+    };
+    window.addEventListener('toggle-language', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('toggle-language', handleLanguageChange as EventListener);
+  }, []);
+
   const translations = getTranslations(locale);
   const difficultyColor = DIFFICULTY_COLORS[combination.difficulty] || 'bg-slate-500/20 text-slate-400 border-slate-500/30';
   const difficultyLabel = DIFFICULTY_LABELS_ES[combination.difficulty] || combination.difficulty;

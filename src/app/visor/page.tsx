@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { FreePGNViewer } from '@/components/chess/PGNViewer';
@@ -9,6 +9,15 @@ import { getTranslations } from '@/lib/i18n';
 
 export default function VisorPage() {
   const [locale, setLocale] = useState<'es' | 'en'>('es');
+
+  useEffect(() => {
+    const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
+      setLocale(e.detail);
+    };
+    window.addEventListener('toggle-language', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('toggle-language', handleLanguageChange as EventListener);
+  }, []);
+
   const translations = getTranslations(locale);
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { CombinationGallery } from '@/components/combinations/CombinationGallery';
@@ -18,6 +18,14 @@ export function CombinationGalleryClient({ initialCombinations }: CombinationGal
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  useEffect(() => {
+    const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
+      setLocale(e.detail);
+    };
+    window.addEventListener('toggle-language', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('toggle-language', handleLanguageChange as EventListener);
+  }, []);
 
   const translations = getTranslations(locale);
 

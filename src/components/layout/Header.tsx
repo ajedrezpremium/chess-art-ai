@@ -19,7 +19,7 @@ const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' 
 
 const languages = [
   { code: 'es', label: 'Español', flag: '🇪🇸', short: 'ES' },
-  { code: 'en', label: 'English', flag: '🇬🇧', short: 'EN' },
+  { code: 'en', label: 'English', flag: '🇺🇸', short: 'EN' },
 ];
 
 interface HeaderProps {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
@@ -28,6 +28,14 @@ interface HomeClientProps {
 export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
   const [locale, setLocale] = useState<'es' | 'en'>('es');
   const [activeTab, setActiveTab] = useState<'board' | 'artwork'>('board');
+  
+  useEffect(() => {
+    const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
+      setLocale(e.detail);
+    };
+    window.addEventListener('toggle-language', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('toggle-language', handleLanguageChange as EventListener);
+  }, []);
   
   const translations = getTranslations(locale);
   
