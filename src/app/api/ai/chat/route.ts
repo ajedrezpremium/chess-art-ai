@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { streamText, generateText } from 'ai';
 import { searchArtCatalogue, formatArtContext } from '@/lib/ai/art-knowledge';
 
 export const runtime = 'nodejs';
@@ -66,6 +66,27 @@ export function getOpenRouterChain(): string[] {
   return [...new Set(chain)];
 }
 
+/**
+ * Sirve un texto completo como stream plano (el widget lo consume igual
+ * que un streaming token a token, en pequeños fragmentos).
+ */
+function streamPlainText(text: string): Response {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const CHUNK = 32;
+  const out = new ReadableStream({
+    start(controller) {
+      for (let i = 0; i < data.length; i += CHUNK) {
+        controller.enqueue(data.slice(i, i + CHUNK));
+      }
+      controller.close();
+    },
+  });
+  return new Response(out, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+}
+
 export async function GET() {
   const provider = process.env.OPENROUTER_API_KEY
     ? 'openrouter'
@@ -105,16 +126,18 @@ export async function POST(req: NextRequest) {
       })),
     ];
 
-    // OpenAI directa: un solo modelo económico.
+    // OpenAI directa: un solo modelo económico (respuesta completa + stream simulado).
     if (!process.env.OPENROUTER_API_KEY && process.env.OPENAI_API_KEY) {
       try {
         const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        const result = streamText({
+        const { text } = await generateText({
           model: openai('gpt-4o-mini'),
           messages: enrichedMessages,
           temperature: 0.7,
+          maxOutputTokens: 1000,
         });
-        return result.toTextStreamResponse();
+        if (!text || !text.trim()) throw new Error('empty response');
+        return streamPlainText(text);
       } catch (error) {
         console.error('AI Chat stream error:', error);
         const detail = error instanceof Error ? error.message : String(error);
@@ -142,7 +165,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // OpenRouter: probar la cadena de modelos en orden y streamear el primero que responda.
+    // OpenRouter: probar la cadena de modelos en orden con generateText
+    // (los errores 401/402/404/429 llegan con mensaje real) y servir la
+    // respuesta ganadora como stream de texto para el widget.
     const openrouter = createOpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
       apiKey: process.env.OPENROUTER_API_KEY,
@@ -151,40 +176,15 @@ export async function POST(req: NextRequest) {
 
     for (const modelId of getOpenRouterChain()) {
       try {
-        const result = streamText({
+        const { text } = await generateText({
           model: openrouter(modelId),
           messages: enrichedMessages,
           temperature: 0.7,
+          maxOutputTokens: 1000,
         });
-        // Preflight: exigir el primer chunk antes de responder (con timeout).
-        // Si el modelo falla (404, 429, sin free), se pasa al siguiente sin romper el stream.
-        const iterator = result.textStream[Symbol.asyncIterator]();
-        const first = await Promise.race([
-          iterator.next(),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('timeout')), 20000)
-          ),
-        ]);
-        if (first.done && !first.value) throw new Error('empty response');
-
-        const encoder = new TextEncoder();
-        const out = new ReadableStream({
-          async start(controller) {
-            try {
-              if (first.value) controller.enqueue(encoder.encode(first.value));
-              for await (const chunk of { [Symbol.asyncIterator]: () => iterator }) {
-                controller.enqueue(encoder.encode(chunk));
-              }
-              controller.close();
-            } catch (e) {
-              controller.error(e);
-            }
-          },
-        });
-        console.log(`AI Chat streaming with model: ${modelId}`);
-        return new Response(out, {
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-        });
+        if (!text || !text.trim()) throw new Error('empty response');
+        console.log(`AI Chat answered with model: ${modelId}`);
+        return streamPlainText(text);
       } catch (error) {
         const detail = error instanceof Error ? error.message : String(error);
         console.warn(`AI Chat model ${modelId} failed, trying next:`, detail);
