@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# chessbase proprietary archives (exportar a PGN antes de importar)
+*.cbv
+*.cbh
+*.cbg
+*.cba

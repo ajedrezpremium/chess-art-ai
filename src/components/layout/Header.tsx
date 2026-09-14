@@ -18,18 +18,19 @@ const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' 
 ];
 
 const languages = [
-  { code: 'es', label: 'ES', flag: '🇪🇸', short: 'ES' },
-  { code: 'en', label: 'EN', flag: '🇺🇸', short: 'EN' },
-];
+  { code: 'es', label: 'Español', flag: '🇪🇸', short: 'ES' },
+  { code: 'en', label: 'English', flag: '🇺🇸', short: 'EN' },
+] as const;
 
 interface HeaderProps {
   locale?: 'es' | 'en';
 }
 
-export function Header({ locale = 'es' }: HeaderProps) {
+export function Header({ locale: localeProp = 'es' }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [locale, setLocale] = useState<'es' | 'en'>(localeProp);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -37,6 +38,24 @@ export function Header({ locale = 'es' }: HeaderProps) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    setLocale(localeProp);
+  }, [localeProp]);
+
+  useEffect(() => {
+    const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
+      setLocale(e.detail);
+    };
+    window.addEventListener('toggle-language', handleLanguageChange as EventListener);
+    return () => window.removeEventListener('toggle-language', handleLanguageChange as EventListener);
+  }, []);
+
+  const handleLocaleChange = (code: 'es' | 'en') => {
+    setLocale(code);
+    setIsLangMenuOpen(false);
+    window.dispatchEvent(new CustomEvent('toggle-language', { detail: code }));
+  };
 
   const t = getTranslations(locale);
 
@@ -138,13 +157,10 @@ export function Header({ locale = 'es' }: HeaderProps) {
                       {languages.map(lang => (
                         <button
                           key={lang.code}
-                          onClick={() => {
-                            window.dispatchEvent(new CustomEvent('toggle-language', { detail: lang.code }));
-                            setIsLangMenuOpen(false);
-                          }}
+                          onClick={() => handleLocaleChange(lang.code)}
                           className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-150"
                           role="option"
-                          aria-selected="false"
+                          aria-selected={locale === lang.code}
                         >
                           <span className="text-lg" aria-hidden="true">{lang.flag}</span>
                           <span className="font-medium">{lang.label}</span>

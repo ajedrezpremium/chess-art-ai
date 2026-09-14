@@ -52,6 +52,22 @@ Exercise or question for the user.
 
 NEVER respond with huge blocks of text. Teach, don't just give the solution.`;
 
+export async function GET() {
+  const provider = process.env.OPENROUTER_API_KEY
+    ? 'openrouter'
+    : process.env.OPENAI_API_KEY
+      ? 'openai'
+      : 'none';
+  return NextResponse.json({
+    ok: provider !== 'none',
+    provider,
+    model: provider === 'openrouter'
+      ? (process.env.OPENROUTER_MODEL || 'openrouter/auto')
+      : 'gpt-4o-mini',
+    keyPresent: provider !== 'none',
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, context, locale = 'es' } = await req.json();
@@ -74,21 +90,43 @@ export async function POST(req: NextRequest) {
         baseURL: 'https://openrouter.ai/api/v1',
         apiKey: process.env.OPENROUTER_API_KEY,
       });
-      model = openrouter('openrouter/auto');
+      model = openrouter(process.env.OPENROUTER_MODEL || 'openrouter/auto');
     } else if (process.env.OPENAI_API_KEY) {
       const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
       model = openai('gpt-4o-mini');
     } else {
-      throw new Error('No AI API key configured');
+      return NextResponse.json(
+        {
+          error:
+            locale === 'es'
+              ? 'IA no configurada: falta OPENROUTER_API_KEY u OPENAI_API_KEY en el servidor. Configúrala en Vercel y redespliega.'
+              : 'AI not configured: missing OPENROUTER_API_KEY or OPENAI_API_KEY on the server. Set it in Vercel and redeploy.',
+        },
+        { status: 503 }
+      );
     }
 
-    const result = streamText({
-      model,
-      messages: enrichedMessages,
-      temperature: 0.7,
-    });
+    try {
+      const result = streamText({
+        model,
+        messages: enrichedMessages,
+        temperature: 0.7,
+      });
 
-    return result.toTextStreamResponse();
+      return result.toTextStreamResponse();
+    } catch (error) {
+      console.error('AI Chat stream error:', error);
+      const detail = error instanceof Error ? error.message : String(error);
+      return NextResponse.json(
+        {
+          error:
+            locale === 'es'
+              ? `El proveedor de IA devolvió un error: ${detail}`
+              : `The AI provider returned an error: ${detail}`,
+        },
+        { status: 502 }
+      );
+    }
   } catch (error) {
     console.error('AI Chat API Error:', error);
     return NextResponse.json(

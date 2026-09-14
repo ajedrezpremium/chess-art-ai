@@ -247,7 +247,16 @@ Current combination context:
         }),
       });
 
-      if (!response.ok) throw new Error('Error en la respuesta');
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const data = await response.json();
+          if (data && typeof data.error === 'string') detail = data.error;
+        } catch {
+          // cuerpo no JSON (p. ej. error de plataforma)
+        }
+        throw new Error(detail || `HTTP ${response.status}`);
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -278,17 +287,28 @@ Current combination context:
       if (autoSpeak && assistantContent.trim()) {
         speakText(assistantContent);
       }
+      if (!assistantContent.trim()) {
+        assistantContent =
+          locale === 'es'
+            ? 'He recibido una respuesta vacía del proveedor de IA. Inténtalo de nuevo en unos segundos.'
+            : 'I received an empty response from the AI provider. Please try again in a few seconds.';
+        setMessages((prev) =>
+          prev.map((m) => (m.id === assistantMessageId ? { ...m, content: assistantContent } : m))
+        );
+      }
     } catch (error) {
       console.error('AI Chat error:', error);
+      const detail = error instanceof Error && error.message ? ` (${error.message})` : '';
       const errorMessage: AIMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: locale === 'es'
-          ? 'Lo siento, no he podido responder. Revisa tu conexión y que la clave de IA (OPENROUTER_API_KEY u OPENAI_API_KEY) esté configurada en el servidor, e inténtalo de nuevo.'
-          : 'Sorry, I could not respond. Check your connection and that the AI key (OPENROUTER_API_KEY or OPENAI_API_KEY) is configured on the server, then try again.',
+        content:
+          locale === 'es'
+            ? `Lo siento, no he podido responder${detail}. Revisa tu conexión y que la clave de IA (OPENROUTER_API_KEY u OPENAI_API_KEY) esté configurada en el servidor, e inténtalo de nuevo.`
+            : `Sorry, I could not respond${detail}. Check your connection and that the AI key (OPENROUTER_API_KEY or OPENAI_API_KEY) is configured on the server, then try again.`,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -542,26 +562,31 @@ Current combination context:
       </AnimatePresence>
 
       {!isOpen && (
-        <motion.button
-          id="agent-toggle"
-          onClick={() => setIsOpen(true)}
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="fixed bottom-6 right-6 z-40 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
-          aria-label={locale === 'es' ? 'Abrir chat con Chess AI Art' : 'Open Chess AI Art chat'}
-          title="Chess AI Art"
-        >
-          <div className="relative">
-            <Bot className="h-5 w-5 text-blue-400" />
-            <motion.span
-              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full"
-            />
+        <div className="fixed bottom-6 right-6 z-40 group">
+          <div className="pointer-events-none absolute -top-11 right-0 whitespace-nowrap rounded-xl border border-chess-gold/40 bg-chess-bg/95 px-3 py-1.5 text-xs font-medium text-chess-gold opacity-0 shadow-xl transition-all duration-200 group-hover:opacity-100 group-hover:-translate-y-1">
+            Chess AI Art
           </div>
-          <span className="font-medium text-sm">Chess AI Art</span>
-        </motion.button>
+          <motion.button
+            id="agent-toggle"
+            onClick={() => setIsOpen(true)}
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 text-white transition-all bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 border border-chess-gold/50 hover:border-chess-gold hover:shadow-[0_0_28px_-6px_rgba(201,162,39,0.55)]"
+            aria-label={locale === 'es' ? 'Abrir chat con Chess AI Art' : 'Open Chess AI Art chat'}
+            title="Chess AI Art"
+          >
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-chess-gold to-chess-gold-light">
+              <Bot className="h-4 w-4 text-chess-bg" />
+              <motion.span
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border border-slate-900"
+              />
+            </div>
+            <span className="font-display font-semibold text-sm tracking-wide">Chess AI Art</span>
+          </motion.button>
+        </div>
       )}
     </>
   );
