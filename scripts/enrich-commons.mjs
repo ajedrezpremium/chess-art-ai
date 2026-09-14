@@ -96,6 +96,8 @@ function queriesFor(w) {
   const qs = [`${w.artist} ${w.title}`];
   if (hint) qs.push(`${w.artist} chess ${hint}`);
   else qs.push(`${w.artist} chess`);
+  const sur = surname(w.artist);
+  if (sur) qs.push(`${sur} chess`);
   return [...new Set(qs)];
 }
 

@@ -21,9 +21,14 @@ export function ArtistasClient() {
     return () => window.removeEventListener('toggle-language', h as EventListener);
   }, []);
 
+  const [tab, setTab] = useState<'artists' | 'collaborators'>('artists');
   const [form, setForm] = useState({ name: '', email: '', title: '', category: 'Dibujo', description: '', imageUrl: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const [cform, setCform] = useState({ alias: '', email: '', kind: 'Obra de arte', title: '', description: '', link: '' });
+  const [cstatus, setCstatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
+  const [cerror, setCerror] = useState('');
 
   const es = locale === 'es';
 
@@ -50,6 +55,29 @@ export function ArtistasClient() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  const cset = (k: keyof typeof cform) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setCform((f) => ({ ...f, [k]: e.target.value }));
+
+  const submitCollaborator = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCstatus('sending');
+    setCerror('');
+    try {
+      const res = await fetch('/api/collaborators/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...cform, locale }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Error');
+      setCstatus('ok');
+    } catch (err) {
+      setCstatus('error');
+      setCerror(err instanceof Error ? err.message : 'Error');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-chess-bg">
       <Header locale={locale} />
@@ -70,6 +98,31 @@ export function ArtistasClient() {
           </p>
         </motion.div>
 
+        {/* Tabs Artistas / Colaboradores */}
+        <div className="mb-10 flex flex-wrap items-center gap-2" role="tablist" aria-label={es ? 'Comunidad' : 'Community'}>
+          {[
+            { id: 'artists' as const, label: es ? 'Artistas' : 'Artists', icon: Palette },
+            { id: 'collaborators' as const, label: es ? 'Colaboradores' : 'Contributors', icon: UploadCloud },
+          ].map((tb) => (
+            <button
+              key={tb.id}
+              role="tab"
+              aria-selected={tab === tb.id}
+              onClick={() => setTab(tb.id)}
+              className={
+                tab === tb.id
+                  ? 'flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-xl border-2 border-chess-gold bg-chess-gold/5 text-chess-gold transition-all duration-200'
+                  : 'flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-xl border-2 border-chess-border/50 text-chess-text-secondary hover:text-chess-text-primary hover:border-chess-gold/30 hover:bg-chess-surface-elevated/30 transition-all duration-200'
+              }
+            >
+              <tb.icon className="h-4 w-4" />
+              {tb.label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'artists' ? (
+        <>
         {/* Ficha destacada: Pablo Iglesias */}
         <motion.section
           initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
@@ -278,6 +331,92 @@ export function ArtistasClient() {
             </form>
           )}
         </section>
+        </>
+        ) : (
+        <>
+        {/* Colaboradores anónimos */}
+        <motion.section
+          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          className="card-elevated p-6 md:p-10"
+        >
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-chess-text-primary mb-2">
+            {es ? 'Colaboradores' : 'Contributors'}
+          </h2>
+          <p className="text-chess-text-secondary mb-8 max-w-3xl">
+            {es
+              ? '¿Tienes una obra, un extracto, una curiosidad o un dato de interés sobre ajedrez y arte? Envíalo de forma anónima o con tu alias: lo valoramos y, si enriquece la web, lo publicamos con tu crédito (o sin él, como prefieras). Revisión en 24–48h.'
+              : 'Have a work, excerpt, curiosity or interesting fact about chess and art? Send it anonymously or with your alias: we review it and, if it enriches the site, we publish it with your credit (or without, as you prefer). Review within 24–48h.'}
+          </p>
+
+          {cstatus === 'ok' ? (
+            <div className="flex items-start gap-3 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+              <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-emerald-300">{es ? '¡Aporte recibido!' : 'Contribution received!'}</p>
+                <p className="text-sm text-chess-text-secondary mt-1">
+                  {es
+                    ? 'Lo valoraremos en 24–48h. Si se publica, respetaremos tu decisión de crédito o anonimato. Gracias.'
+                    : 'We’ll review it within 24–48h. If published, we’ll respect your credit or anonymity choice. Thank you.'}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <form onSubmit={submitCollaborator} className="grid md:grid-cols-2 gap-5">
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">
+                  {es ? 'Alias (o “Anónimo”) *' : 'Alias (or “Anonymous”) *'}
+                </span>
+                <input required value={cform.alias} onChange={cset('alias')} className="input-base" placeholder={es ? 'Anónimo' : 'Anonymous'} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">
+                  Email ({es ? 'opcional, para avisarte si se publica' : 'optional, to notify you if published'})
+                </span>
+                <input type="email" value={cform.email} onChange={cset('email')} className="input-base" placeholder="alias@email.com" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Tipo de aporte *' : 'Contribution type *'}</span>
+                <select value={cform.kind} onChange={cset('kind')} className="input-base">
+                  {(es ? ['Obra de arte', 'Extracto o texto', 'Curiosidad o dato', 'Otro'] : ['Artwork', 'Excerpt or text', 'Curiosity or fact', 'Other']).map((k) => (
+                    <option key={k} value={k} className="bg-chess-surface">{k}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Título *' : 'Title *'}</span>
+                <input required value={cform.title} onChange={cset('title')} className="input-base" placeholder={es ? 'El mate del pasillo' : 'The corridor mate'} />
+              </label>
+              <label className="block md:col-span-2">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Tu aporte *' : 'Your contribution *'}</span>
+                <textarea required value={cform.description} onChange={cset('description')} className="input-base textarea-base" rows={5} />
+              </label>
+              <label className="block md:col-span-2">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">
+                  {es ? 'Enlace o imagen (opcional)' : 'Link or image (optional)'}
+                </span>
+                <input value={cform.link} onChange={cset('link')} className="input-base" placeholder="https://…" />
+              </label>
+              {cstatus === 'error' && (
+                <p className="md:col-span-2 flex items-center gap-2 text-sm text-red-400">
+                  <AlertCircle className="h-4 w-4" />
+                  {es ? 'No se pudo enviar: ' : 'Could not submit: '}{cerror}
+                  {' — '}
+                  <a className="underline" href="mailto:chessaiagency@gmail.com">
+                    {es ? 'enviar por email' : 'send by email'}
+                  </a>
+                </p>
+              )}
+              <div className="md:col-span-2">
+                <button type="submit" disabled={cstatus === 'sending'} className="btn-primary disabled:opacity-50">
+                  {cstatus === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}
+                  {es ? 'Enviar aporte' : 'Send contribution'}
+                </button>
+              </div>
+            </form>
+          )}
+        </motion.section>
+        </>
+        )}
       </main>
       <SiteFooter locale={locale} />
       <AIChatWidget locale={locale} />

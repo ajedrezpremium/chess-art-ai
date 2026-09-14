@@ -6,6 +6,7 @@ import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { getTranslations } from '@/lib/i18n';
 import { GalleryPage } from '@/components/gallery/GalleryPage';
 import { ART_CATALOGUE } from '@/lib/data/art-catalogue';
+import { mapArtWorkToItem } from '@/lib/data/gallery-map';
 
 const musicFilters = [
   { value: 'all', label: 'Todo' },
@@ -27,22 +28,7 @@ export default function MusicaPage() {
   }, []);
 
   const t = getTranslations(locale);
-  const items = ART_CATALOGUE.filter((w) => w.discipline === 'music').map((w) => ({
-    id: w.id,
-    title: w.title,
-    image: w.image,
-    category: w.category,
-    year: w.year,
-    author: w.artist,
-    description: w.chessNote ? `${w.note} ${w.chessNote}` : w.note,
-    tags: w.tags,
-    type: w.category,
-    period: w.period,
-    location: [w.institution, w.city, w.country].filter(Boolean).join(', ') || undefined,
-    license: w.license,
-    chessRole: w.chessRole,
-    sources: w.sources,
-  }));
+  const items = ART_CATALOGUE.filter((w) => w.discipline === 'music').map(mapArtWorkToItem);
 
   return (
     <div className="min-h-screen bg-chess-bg">

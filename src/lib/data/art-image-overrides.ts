@@ -1,5 +1,6 @@
 // Generado por scripts/enrich-commons.mjs — NO editar a mano.
 // Imágenes reales verificadas en Wikimedia Commons (apellido+título/ajedrez).
+// Revisión manual: eliminados falsos positivos (fotos genéricas repetidas).
 // Ver scripts/commons-report.json para el detalle.
 export interface ArtImageOverride { image: string; filePage: string; width?: number }
 
@@ -33,11 +34,6 @@ export const ART_IMAGE_OVERRIDES: Record<string, ArtImageOverride> = {
     "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Recueil._%22Casablanca%22_film_de_Michael_Curtiz_-_btv1b105255527_%2813_of_32%29.jpg/1280px-Recueil._%22Casablanca%22_film_de_Michael_Curtiz_-_btv1b105255527_%2813_of_32%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
     "filePage": "https://commons.wikimedia.org/wiki/File%3ARecueil._%22Casablanca%22_film_de_Michael_Curtiz_-_btv1b105255527_(13_of_32).jpg",
     "width": 2664
-  },
-  "art-167": {
-    "image": "https://upload.wikimedia.org/wikipedia/commons/6/6b/David_Lynch_and_Kyle_MacLachlan_at_the_Twin_Peaks_Premiere_2017.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-    "filePage": "https://commons.wikimedia.org/wiki/File%3ADavid_Lynch_and_Kyle_MacLachlan_at_the_Twin_Peaks_Premiere_2017.jpg",
-    "width": 600
   },
   "art-194": {
     "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Roma_-_Space_Invader_-_001.jpg/1280px-Roma_-_Space_Invader_-_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
@@ -79,11 +75,6 @@ export const ART_IMAGE_OVERRIDES: Record<string, ArtImageOverride> = {
     "filePage": "https://commons.wikimedia.org/wiki/File%3ACornelis_de_Man_-_The_Chess_Players_-_WGA13904.jpg",
     "width": 872
   },
-  "art-013": {
-    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Chess_Set_Man_Ray.jpg/1280px-Chess_Set_Man_Ray.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-    "filePage": "https://commons.wikimedia.org/wiki/File%3AChess_Set_Man_Ray.jpg",
-    "width": 4032
-  },
   "art-015": {
     "image": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Paul_Klee_Ueberschach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
     "filePage": "https://commons.wikimedia.org/wiki/File%3APaul_Klee_Ueberschach.jpg",
@@ -103,16 +94,6 @@ export const ART_IMAGE_OVERRIDES: Record<string, ArtImageOverride> = {
     "image": "https://upload.wikimedia.org/wikipedia/commons/4/42/Alm%C3%A9es_jouant_aux_%C3%A9checs%2C_G%C3%A9r%C3%B4me_Jean-L%C3%A9on%2C_1870.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
     "filePage": "https://commons.wikimedia.org/wiki/File%3AAlm%C3%A9es_jouant_aux_%C3%A9checs%2C_G%C3%A9r%C3%B4me_Jean-L%C3%A9on%2C_1870.jpg",
     "width": 927
-  },
-  "art-030": {
-    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/Giardino_Spoerri_Seggiano_Pasquetta_2018_Object_Chess_Yoko_Ono_BHO_086-LR.jpg/1280px-Giardino_Spoerri_Seggiano_Pasquetta_2018_Object_Chess_Yoko_Ono_BHO_086-LR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-    "filePage": "https://commons.wikimedia.org/wiki/File%3AGiardino_Spoerri_Seggiano_Pasquetta_2018_Object_Chess_Yoko_Ono_BHO_086-LR.jpg",
-    "width": 3840
-  },
-  "art-071": {
-    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Chess_Set_Man_Ray.jpg/1280px-Chess_Set_Man_Ray.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-    "filePage": "https://commons.wikimedia.org/wiki/File%3AChess_Set_Man_Ray.jpg",
-    "width": 4032
   },
   "art-083": {
     "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Sz%C3%A9chenyi_Gy%C3%B3gyf%C3%BCrd%C5%91%2C_2011._Chess_in_the_Budapest_Baths_%286050758790%29.jpg/1280px-Sz%C3%A9chenyi_Gy%C3%B3gyf%C3%BCrd%C5%91%2C_2011._Chess_in_the_Budapest_Baths_%286050758790%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
@@ -148,5 +129,55 @@ export const ART_IMAGE_OVERRIDES: Record<string, ArtImageOverride> = {
     "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Bargue_The_Chess_Game.jpg/1280px-Bargue_The_Chess_Game.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
     "filePage": "https://commons.wikimedia.org/wiki/File%3ABargue_The_Chess_Game.jpg",
     "width": 1300
+  },
+  "art-021": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/27/Honor%C3%A9_Daumier_-_Die_Schachspieler.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AHonor%C3%A9_Daumier_-_Die_Schachspieler.jpg",
+    "width": 480
+  },
+  "art-027": {
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Chess_Set_Man_Ray.jpg/1280px-Chess_Set_Man_Ray.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AChess_Set_Man_Ray.jpg",
+    "width": 4032
+  },
+  "art-028": {
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Josef_Hartwig_Chess1.jpg/1280px-Josef_Hartwig_Chess1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AJosef_Hartwig_Chess1.jpg",
+    "width": 2448
+  },
+  "art-042": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Selenus_chess_set.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3ASelenus_chess_set.jpg",
+    "width": 500
+  },
+  "art-047": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/80/American_Chess_Bulletin_Vol._01_-_DPLA_-_71c5a7f02c22f16608e340e82662bab6_%28page_8%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AAmerican_Chess_Bulletin_Vol._01_-_DPLA_-_71c5a7f02c22f16608e340e82662bab6_(page_8).jpg",
+    "width": 798
+  },
+  "art-076": {
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Marostica6.JPG/1280px-Marostica6.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AMarostica6.JPG",
+    "width": 2256
+  },
+  "art-132": {
+    "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Kunstgewerbemuseum_Berlin_Meissen_Yellow_Lion_and_chess_board_pattern_9655.jpg/1280px-Kunstgewerbemuseum_Berlin_Meissen_Yellow_Lion_and_chess_board_pattern_9655.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AKunstgewerbemuseum_Berlin_Meissen_Yellow_Lion_and_chess_board_pattern_9655.jpg",
+    "width": 8256
+  },
+  "art-145": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Star_trek_chessboard.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AStar_trek_chessboard.JPG",
+    "width": 574
+  },
+  "art-151": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/20/Kempelen-charcoal.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AKempelen-charcoal.jpg",
+    "width": 422
+  },
+  "art-160": {
+    "image": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_AVRO_Holland_1938.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "filePage": "https://commons.wikimedia.org/wiki/File%3AChess_AVRO_Holland_1938.jpg",
+    "width": 560
   }
 };
