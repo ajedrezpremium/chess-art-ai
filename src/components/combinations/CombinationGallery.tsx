@@ -40,7 +40,7 @@ export function CombinationGallery({
       c.white_player.toLowerCase().includes(search.toLowerCase()) ||
       c.black_player.toLowerCase().includes(search.toLowerCase());
     const matchesDifficulty = !difficultyFilter || c.difficulty === difficultyFilter;
-    const matchesYear = !yearFilter || c.year.toString() === yearFilter;
+    const matchesYear = !yearFilter || (typeof c.year === 'number' && c.year.toString() === yearFilter);
     const matchesCategory = !categoryFilter || c.category === categoryFilter;
     const matchesPlayer = !playerFilter || 
       c.white_player.toLowerCase().includes(playerFilter.toLowerCase()) ||
@@ -113,7 +113,7 @@ export function CombinationGallery({
     d === 'Expert' ? 'Experto' : 'Maestro'
   ) : d }));
 
-  const years = [...new Set(combinations.map(c => c.year))].sort((a, b) => b - a);
+  const years = [...new Set(combinations.map(c => c.year).filter((y): y is number => typeof y === 'number'))].sort((a, b) => b - a);
   const categories = [...new Set(combinations.map(c => c.category).filter(Boolean))].sort();
 
   return (

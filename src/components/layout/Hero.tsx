@@ -20,7 +20,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen overflow-hidden pt-36 md:pt-44 pb-16">
       {/* Background layers */}
       <div className="absolute inset-0 hero-gradient-mesh" aria-hidden="true" />
       <div className="absolute inset-0 hero-bg-grid" aria-hidden="true" />
@@ -57,7 +57,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
       {/* Decorative chess board pattern overlay */}
       <div className="absolute inset-0 chess-pattern opacity-30 pointer-events-none" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 sm:px-8 lg:px-12 pt-40">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Main Title - LARGER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -90,9 +90,9 @@ export function Hero({ locale = 'es' }: HeroProps) {
           className="mt-12 flex flex-col sm:flex-row items-center gap-4"
         >
           <Link href="/combinaciones">
-            <Button className="btn-primary group w-full sm:w-auto" size="lg">
+            <Button className="btn-primary btn-cta-attention group w-full sm:w-auto" size="lg">
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              Explorar el Top 100
+              {t.hero.ctaPrimary || 'Explorar el Top 100'}
             </Button>
           </Link>
         </motion.div>

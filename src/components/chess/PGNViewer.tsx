@@ -96,10 +96,20 @@ export function PGNViewer({
     }
   }, [currentMoveIndex, parsedPGN, onMoveChange]);
 
-  // Auto-scroll to active move
+  // Auto-scroll SOLO dentro de la lista de jugadas (nunca la página: el tablero queda fijo).
   useEffect(() => {
-    if (activeMoveRef.current) {
-      activeMoveRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const btn = activeMoveRef.current;
+    if (!btn) return;
+    const viewport = btn.closest('[data-radix-scroll-area-viewport]') as HTMLElement | null;
+    if (!viewport) return;
+    const btnTop = btn.offsetTop;
+    const viewTop = viewport.scrollTop;
+    const viewBottom = viewTop + viewport.clientHeight;
+    if (btnTop < viewTop || btnTop + btn.offsetHeight > viewBottom) {
+      viewport.scrollTo({
+        top: btnTop - viewport.clientHeight / 2 + btn.offsetHeight / 2,
+        behavior: 'smooth',
+      });
     }
   }, [currentMoveIndex]);
 
@@ -273,22 +283,24 @@ export function PGNViewer({
 
   return (
     <div className={cn('flex flex-col gap-4', className)}>
-      <div className="relative flex items-center justify-center gap-3">
+      <div className="relative flex items-stretch justify-center gap-3">
         {/* Dynamic Eval balance bar */}
-        <div className="hidden sm:flex flex-col h-[320px] w-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60 shadow-inner">
+        <div className="hidden sm:flex flex-col self-stretch w-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/60 shadow-inner">
           <div 
             className="w-full bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-300"
             style={{ height: `${progressRatio}%` }}
           />
         </div>
 
-        <ChessBoardSvg
-          fen={chessRef.current.fen()}
-          orientation={orientation}
-          coordinates={showCoordinates}
-          highlights={highlights}
-          className="mx-auto"
-        />
+        <div className="w-full max-w-[600px] shrink-0">
+          <ChessBoardSvg
+            fen={chessRef.current.fen()}
+            orientation={orientation}
+            coordinates={showCoordinates}
+            highlights={highlights}
+            className="mx-auto"
+          />
+        </div>
       </div>
 
       {showControls && (

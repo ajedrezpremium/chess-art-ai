@@ -135,6 +135,12 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
                         alt={combination.title}
                         className="w-full h-full object-cover transition-all duration-500 hover:scale-[1.02]"
                         loading="lazy"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (!img.src.endsWith('/artworks/placeholder.svg')) {
+                            img.src = '/artworks/placeholder.svg';
+                          }
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/60 via-transparent to-transparent" />
                       <div className="absolute bottom-4 right-4 opacity-0 hover:opacity-100 transition-opacity">
@@ -208,6 +214,12 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
                         src={combination.artwork_url}
                         alt={combination.title}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (!img.src.endsWith('/artworks/placeholder.svg')) {
+                            img.src = '/artworks/placeholder.svg';
+                          }
+                        }}
                       />
                     </div>
                   )}

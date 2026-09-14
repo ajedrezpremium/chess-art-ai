@@ -174,6 +174,12 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                           src={featured.artwork_url}
                           alt={featured.title}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const img = e.currentTarget;
+                            if (!img.src.endsWith('/artworks/placeholder.svg')) {
+                              img.src = '/artworks/placeholder.svg';
+                            }
+                          }}
                         />
                       </div>
                     )}

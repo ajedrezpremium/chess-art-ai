@@ -9,7 +9,11 @@
       "cinema": "Cinema",
       "music": "Music",
       "gallery": "Gallery",
-      "pgn": "PGN Viewer"
+      "pgn": "PGN Viewer",
+      "artists": "Artists",
+      "artistsTip": "Artists & profiles",
+      "shop": "Shop",
+      "shopTip": "Shop: books, art & film"
     },
     "language": "Language"
   },
@@ -34,7 +38,9 @@
     "cinema": "Cinema",
     "music": "Music",
     "gallery": "Gallery",
-    "pgn": "PGN Viewer"
+    "pgn": "PGN Viewer",
+    "artists": "Artists",
+    "shop": "Shop"
   },
   "footer": {
     "rights": "All rights reserved",

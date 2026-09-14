@@ -4,17 +4,18 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Palette, BookOpen, Film, Image, Music, Globe, ChevronDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Menu, X, Palette, BookOpen, Film, Image, Music, Users, ShoppingBag, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTranslations } from '@/lib/i18n';
 
-const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' | 'music'; icon: typeof Palette; tooltipKey: string }> = [
-  { href: '/combinaciones', key: 'chess', icon: Palette, tooltipKey: 'header.nav.chess' },
-  { href: '/arte', key: 'art', icon: Image, tooltipKey: 'header.nav.art' },
-  { href: '/libros', key: 'books', icon: BookOpen, tooltipKey: 'header.nav.books' },
-  { href: '/cine', key: 'cinema', icon: Film, tooltipKey: 'header.nav.cinema' },
-  { href: '/musica', key: 'music', icon: Music, tooltipKey: 'header.nav.music' },
+const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' | 'music' | 'artists' | 'shop'; icon: typeof Palette; tipKey: 'artistsTip' | 'shopTip' | null }> = [
+  { href: '/combinaciones', key: 'chess', icon: Palette, tipKey: null },
+  { href: '/arte', key: 'art', icon: Image, tipKey: null },
+  { href: '/libros', key: 'books', icon: BookOpen, tipKey: null },
+  { href: '/cine', key: 'cinema', icon: Film, tipKey: null },
+  { href: '/musica', key: 'music', icon: Music, tipKey: null },
+  { href: '/artistas', key: 'artists', icon: Users, tipKey: 'artistsTip' },
+  { href: '/tienda', key: 'shop', icon: ShoppingBag, tipKey: 'shopTip' },
 ];
 
 const languages = [
@@ -59,8 +60,10 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
 
   const t = getTranslations(locale);
 
+  const tip = (k: 'artistsTip' | 'shopTip' | null) =>
+    k ? String((t.header.nav as Record<string, string>)[k] ?? '') : '';
+
   return (
-    <TooltipProvider>
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -87,35 +90,30 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
-              {navItems.map((item, index) => {
+            <div className="hidden lg:flex items-center gap-0.5">
+              {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                 return (
-                  <Tooltip key={item.href}>
-                    <TooltipTrigger>
-                      <Link
-                        href={item.href}
-                        className={isActive
-                          ? 'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-chess-gold bg-chess-gold/10 transition-all duration-200'
-                          : 'relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50 transition-all duration-200'}
-                        aria-current={isActive ? 'page' : undefined}
-                      >
-                        <Icon className="h-4 w-4 transition-transform hover:scale-110" aria-hidden="true" />
-                        <span>{t.nav[item.key as keyof typeof t.nav]}</span>
-                        {isActive && (
-                          <motion.div
-                            layoutId="nav-indicator"
-                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-chess-gold to-chess-gold-light rounded-full"
-                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                          />
-                        )}
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" align="center" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                      {t[item.tooltipKey] as string}
-                    </TooltipContent>
-                  </Tooltip>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={tip(item.tipKey) || String(t.nav[item.key as keyof typeof t.nav])}
+                    className={isActive
+                      ? 'relative flex items-center gap-2 px-3 xl:px-4 py-2.5 text-sm font-medium rounded-xl text-chess-gold bg-chess-gold/10 transition-all duration-200'
+                      : 'relative flex items-center gap-2 px-3 xl:px-4 py-2.5 text-sm font-medium rounded-xl text-chess-text-secondary hover:text-chess-text-primary hover:bg-chess-surface-elevated/50 transition-all duration-200'}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <Icon className="h-4 w-4 transition-transform hover:scale-110" aria-hidden="true" />
+                    <span>{t.nav[item.key as keyof typeof t.nav]}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-indicator"
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-chess-gold to-chess-gold-light rounded-full"
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                  </Link>
                 );
               })}
             </div>
@@ -124,12 +122,11 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
             <div className="flex items-center gap-3">
               {/* Language Selector with Flag */}
               <div className="relative">
-                <Tooltip>
-                  <TooltipTrigger>
                     <button
                       className="h-10 w-10 sm:w-auto px-3 rounded-xl text-chess-text-secondary hover:text-chess-gold hover:bg-chess-surface-elevated/50 transition-all duration-200 flex items-center gap-2"
                       onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
                       aria-label={getTranslations('es').header.language}
+                      title={getTranslations('es').header.language}
                       aria-expanded={isLangMenuOpen}
                       aria-haspopup="listbox"
                     >
@@ -137,11 +134,6 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
                       <span className="hidden sm:inline font-medium text-sm">{languages.find(l => l.code === locale)?.short}</span>
                       <ChevronDown className="h-4 w-4 transition-transform" />
                     </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" align="end" className="bg-chess-surface-elevated border-chess-border text-chess-text-primary text-sm px-3 py-1.5 rounded-lg shadow-strong">
-                    {getTranslations('es').header.language}
-                  </TooltipContent>
-                </Tooltip>
 
                 <AnimatePresence>
                   {isLangMenuOpen && (
@@ -244,10 +236,9 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
         <motion.div
           className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-chess-gold to-chess-violet"
           style={{ width: isScrolled ? '100%' : '0%' }}
-          transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
-          aria-hidden="true"
-        />
+        transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+        aria-hidden="true"
+      />
       </motion.header>
-    </TooltipProvider>
   );
 }

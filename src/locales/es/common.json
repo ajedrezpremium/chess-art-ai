@@ -9,7 +9,11 @@
       "cinema": "Cine",
       "music": "Música",
       "gallery": "Galería",
-      "pgn": "Visor PGN"
+      "pgn": "Visor PGN",
+      "artists": "Artistas",
+      "artistsTip": "Artistas y perfiles",
+      "shop": "Tienda",
+      "shopTip": "Tienda: libros, arte y cine"
     },
     "language": "Idioma"
   },
@@ -34,7 +38,9 @@
     "cinema": "Cine",
     "music": "Música",
     "gallery": "Galería",
-    "pgn": "Visor PGN"
+    "pgn": "Visor PGN",
+    "artists": "Artistas",
+    "shop": "Tienda"
   },
   "footer": {
     "rights": "Todos los derechos reservados",
