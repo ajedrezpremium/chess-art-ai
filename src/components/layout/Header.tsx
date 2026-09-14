@@ -31,14 +31,32 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [locale, setLocale] = useState<'es' | 'en'>(localeProp);
   const pathname = usePathname();
 
+  // Header auto-ocultable: se esconde al bajar (libera el visor/tablero),
+  // reaparece al subir o al estar arriba del todo.
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    let lastY = window.scrollY;
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setIsScrolled(y > 20);
+      if (y < 80) {
+        setVisible(true);
+      } else if (y > lastY + 4) {
+        setVisible(false);
+      } else if (y < lastY - 4) {
+        setVisible(true);
+      }
+      lastY = y;
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Con el menú móvil abierto, el header siempre visible.
+  const showHeader = visible || isMobileMenuOpen;
 
   useEffect(() => {
     setLocale(localeProp);
@@ -66,9 +84,9 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
   return (
       <motion.header
         initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-chess-bg/95 backdrop-blur-2xl border-b border-chess-border/50"
+        animate={{ y: showHeader ? 0 : '-110%', opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.19, 1, 0.22, 1] }}
+        className="fixed top-0 left-0 right-0 z-40 bg-chess-bg/95 backdrop-blur-2xl border-b border-chess-border/50"
       >
         <nav className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" aria-label="Main navigation">
           <div className="flex items-center justify-between h-18 lg:h-20">
