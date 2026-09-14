@@ -107,6 +107,57 @@
     "subtitle": "Analiza cualquier partida pegando su PGN",
     "cta": "Abrir visor"
   },
+  "art": {
+    "title": "ARTE AJEDREZ",
+    "subtitle": "Obras maestras donde el ajedrez inspira el arte",
+    "cta": "Explorar arte",
+    "search": "Buscar obras...",
+    "filters": "Filtros",
+    "all": "Todo",
+    "painting": "Pintura",
+    "sculpture": "Escultura",
+    "digital": "Digital",
+    "photography": "Fotografía"
+  },
+  "books": {
+    "title": "BIBLIOTECA AJEDREZ",
+    "subtitle": "Los mejores libros de ajedrez de la historia",
+    "cta": "Explorar biblioteca",
+    "search": "Buscar libros...",
+    "filters": "Filtros",
+    "all": "Todo",
+    "strategy": "Estrategia",
+    "tactics": "Táctica",
+    "endgame": "Finales",
+    "openings": "Aperturas",
+    "history": "Historia",
+    "biography": "Biografías",
+    "fiction": "Ficción"
+  },
+  "cinema": {
+    "title": "CINE AJEDREZ",
+    "subtitle": "Películas y documentales donde el ajedrez es protagonista",
+    "cta": "Explorar cine",
+    "search": "Buscar películas...",
+    "filters": "Filtros",
+    "all": "Todo",
+    "movie": "Película",
+    "documentary": "Documental",
+    "series": "Serie",
+    "short": "Cortometraje"
+  },
+  "music": {
+    "title": "MÚSICA AJEDREZ",
+    "subtitle": "Composiciones inspiradas en el juego ciencia",
+    "cta": "Explorar música",
+    "search": "Buscar música...",
+    "filters": "Filtros",
+    "all": "Todo",
+    "classical": "Clásica",
+    "jazz": "Jazz",
+    "contemporary": "Contemporánea",
+    "soundtrack": "Banda sonora"
+  },
   "ai": {
     "title": "Agente IA",
     "placeholder": "Pregunta sobre ajedrez, arte o la combinación actual...",

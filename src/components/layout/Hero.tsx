@@ -27,26 +27,31 @@ export function Hero({ locale = 'es' }: HeroProps) {
       
       {/* Floating gold particles */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="floating-particle w-1 h-1"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 4 + 2}px`,
-              height: `${Math.random() * 4 + 2}px`,
-            }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: [0.1, 0.4, 0.1], scale: [0.5, 1, 0.5] }}
-            transition={{
-              duration: Math.random() * 6 + 4,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
+        {[...Array(12)].map((_, i) => {
+          const left = (i * 37 + 11) % 100;
+          const top = (i * 53 + 7) % 100;
+          const size = 2 + ((i * 7) % 4);
+          return (
+            <motion.div
+              key={i}
+              className="floating-particle w-1 h-1"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+              }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: [0.1, 0.4, 0.1], scale: [0.5, 1, 0.5] }}
+              transition={{
+                duration: 6 + (i % 5),
+                repeat: Infinity,
+                delay: (i % 6) * 0.5,
+                ease: 'easeInOut',
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Decorative chess board pattern overlay */}

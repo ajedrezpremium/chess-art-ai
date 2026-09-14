@@ -110,6 +110,57 @@ export interface Translations {
     subtitle: string;
     cta: string;
   };
+  art: {
+    title: string;
+    subtitle: string;
+    cta: string;
+    search: string;
+    filters: string;
+    all: string;
+    painting: string;
+    sculpture: string;
+    digital: string;
+    photography: string;
+  };
+  books: {
+    title: string;
+    subtitle: string;
+    cta: string;
+    search: string;
+    filters: string;
+    all: string;
+    strategy: string;
+    tactics: string;
+    endgame: string;
+    openings: string;
+    history: string;
+    biography: string;
+    fiction: string;
+  };
+  cinema: {
+    title: string;
+    subtitle: string;
+    cta: string;
+    search: string;
+    filters: string;
+    all: string;
+    movie: string;
+    documentary: string;
+    series: string;
+    short: string;
+  };
+  music: {
+    title: string;
+    subtitle: string;
+    cta: string;
+    search: string;
+    filters: string;
+    all: string;
+    classical: string;
+    jazz: string;
+    contemporary: string;
+    soundtrack: string;
+  };
   pgn: {
     title: string;
     subtitle: string;

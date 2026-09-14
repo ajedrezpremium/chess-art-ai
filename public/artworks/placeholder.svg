@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Chess Art placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A0A0F"/>
+      <stop offset="1" stop-color="#1A1A2E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C9A227"/>
+      <stop offset="1" stop-color="#D4B84A"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g fill="none" stroke="#C9A227" opacity="0.18">
+    <rect x="230" y="90" width="340" height="340"/>
+    <line x1="230" y1="175" x2="570" y2="175"/><line x1="230" y1="260" x2="570" y2="260"/><line x1="230" y1="345" x2="570" y2="345"/>
+    <line x1="315" y1="90" x2="315" y2="430"/><line x1="400" y1="90" x2="400" y2="430"/><line x1="485" y1="90" x2="485" y2="430"/>
+  </g>
+  <text x="400" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="120" fill="url(#gold)">♞</text>
+  <text x="400" y="480" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#F5F5F7">CHESS ART</text>
+  <text x="400" y="512" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#8E8EA0">Ilustración en preparación · Pablo Iglesias</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Arte y ajedrez">
+  <defs>
+    <linearGradient id="bga" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A0A0F"/><stop offset="1" stop-color="#23233A"/>
+    </linearGradient>
+    <linearGradient id="golda" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C9A227"/><stop offset="1" stop-color="#D4B84A"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bga)"/>
+  <circle cx="400" cy="270" r="120" fill="none" stroke="url(#golda)" stroke-width="3"/>
+  <circle cx="400" cy="270" r="86" fill="none" stroke="#C9A227" stroke-width="1" opacity="0.5"/>
+  <text x="400" y="300" text-anchor="middle" font-family="Georgia, serif" font-size="84" fill="url(#golda)">♜</text>
+  <text x="400" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#F5F5F7">ARTE · AJEDREZ</text>
+  <text x="400" y="502" text-anchor="middle" font-size="15" fill="#8E8EA0">Pintura · Escultura · Digital · Fotografía</text>
+</svg>

@@ -102,6 +102,57 @@
     "subtitle": "Explore the complete collection of illustrations",
     "cta": "View full gallery"
   },
+  "art": {
+    "title": "CHESS ART",
+    "subtitle": "Masterpieces where chess inspires art",
+    "cta": "Explore art",
+    "search": "Search artworks...",
+    "filters": "Filters",
+    "all": "All",
+    "painting": "Painting",
+    "sculpture": "Sculpture",
+    "digital": "Digital",
+    "photography": "Photography"
+  },
+  "books": {
+    "title": "CHESS LIBRARY",
+    "subtitle": "The best chess books in history",
+    "cta": "Explore library",
+    "search": "Search books...",
+    "filters": "Filters",
+    "all": "All",
+    "strategy": "Strategy",
+    "tactics": "Tactics",
+    "endgame": "Endgames",
+    "openings": "Openings",
+    "history": "History",
+    "biography": "Biographies",
+    "fiction": "Fiction"
+  },
+  "cinema": {
+    "title": "CHESS CINEMA",
+    "subtitle": "Films and documentaries where chess takes center stage",
+    "cta": "Explore cinema",
+    "search": "Search films...",
+    "filters": "Filters",
+    "all": "All",
+    "movie": "Film",
+    "documentary": "Documentary",
+    "series": "Series",
+    "short": "Short"
+  },
+  "music": {
+    "title": "CHESS MUSIC",
+    "subtitle": "Compositions inspired by the game of chess",
+    "cta": "Explore music",
+    "search": "Search music...",
+    "filters": "Filters",
+    "all": "All",
+    "classical": "Classical",
+    "jazz": "Jazz",
+    "contemporary": "Contemporary",
+    "soundtrack": "Soundtrack"
+  },
   "pgn": {
     "title": "PGN VIEWER",
     "subtitle": "Analyze any game by pasting its PGN",

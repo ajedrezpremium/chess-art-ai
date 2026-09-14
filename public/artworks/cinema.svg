@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Cine y ajedrez">
+  <defs>
+    <linearGradient id="bgc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0A0A0F"/><stop offset="1" stop-color="#201C33"/>
+    </linearGradient>
+    <linearGradient id="goldc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C9A227"/><stop offset="1" stop-color="#D4B84A"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bgc)"/>
+  <rect x="170" y="150" width="460" height="260" rx="18" fill="#101018" stroke="url(#goldc)" stroke-width="3"/>
+  <polygon points="370,220 370,340 470,280" fill="url(#goldc)"/>
+  <g fill="#C9A227" opacity="0.85">
+    <rect x="195" y="430" width="40" height="26" rx="4"/><rect x="250" y="430" width="40" height="26" rx="4"/><rect x="305" y="430" width="40" height="26" rx="4"/><rect x="360" y="430" width="40" height="26" rx="4"/><rect x="415" y="430" width="40" height="26" rx="4"/><rect x="470" y="430" width="40" height="26" rx="4"/><rect x="525" y="430" width="40" height="26" rx="4"/>
+  </g>
+  <text x="400" y="505" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#F5F5F7">CINE · AJEDREZ</text>
+</svg>

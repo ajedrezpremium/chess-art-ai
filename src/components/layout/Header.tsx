@@ -18,8 +18,8 @@ const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' 
 ];
 
 const languages = [
-  { code: 'es', label: 'Español', flag: '🇪🇸', short: 'ES' },
-  { code: 'en', label: 'English', flag: '🇺🇸', short: 'EN' },
+  { code: 'es', label: 'ES', flag: '🇪🇸', short: 'ES' },
+  { code: 'en', label: 'EN', flag: '🇺🇸', short: 'EN' },
 ];
 
 interface HeaderProps {
@@ -51,20 +51,19 @@ export function Header({ locale = 'es' }: HeaderProps) {
         <nav className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" aria-label="Main navigation">
           <div className="flex items-center justify-between h-18 lg:h-20">
             {/* Logo */}
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 font-display text-xl md:text-2xl font-semibold text-chess-text-primary tracking-tight z-50"
-              aria-label="CHESS ART"
+            <Link
+              href="/"
+              className="flex items-center gap-2.5 font-display text-xl md:text-2xl font-semibold tracking-tight z-50"
+              aria-label="Chess Art"
             >
               <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-chess-gold to-chess-gold-light">
                 <span className="text-chess-bg font-bold text-lg">♟</span>
               </span>
-              <div className="flex flex-col leading-tight">
-                <span className="gradient-text-gold text-lg md:text-xl font-bold">CHESS</span>
-                <span className="text-chess-text-primary text-lg md:text-xl font-bold">ART</span>
-              </div>
-              <span className="hidden sm:inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-chess-gold to-chess-gold-light text-chess-bg text-[10px] font-bold">
-                AI
+              <span className="whitespace-nowrap leading-none">
+                <span className="gradient-text-gold font-bold">CHESS ART</span>
+                <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br from-chess-gold to-chess-gold-light text-chess-bg text-[10px] font-bold align-middle">
+                  AI
+                </span>
               </span>
             </Link>
 
@@ -149,7 +148,6 @@ export function Header({ locale = 'es' }: HeaderProps) {
                         >
                           <span className="text-lg" aria-hidden="true">{lang.flag}</span>
                           <span className="font-medium">{lang.label}</span>
-                          <span className="text-xs text-chess-text-muted ml-auto">{lang.short}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -220,14 +218,6 @@ export function Header({ locale = 'es' }: HeaderProps) {
                       </Link>
                     );
                   })}
-                  <div className="pt-2 border-t border-chess-border/30" />
-                  <a
-                    href="/combinaciones"
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-chess-violet to-chess-violet-light text-chess-bg font-semibold rounded-xl transition-all duration-200"
-                  >
-                    <span className="h-5 w-5">🤖</span>
-                    {t.hero.ctaSecondary || 'Hablar con el Agente IA'}
-                  </a>
                 </div>
               </motion.div>
             )}

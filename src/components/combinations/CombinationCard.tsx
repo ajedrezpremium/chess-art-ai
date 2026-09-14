@@ -44,6 +44,14 @@ export function CombinationCard({
 
   const formatNumber = (num: number) => `#${num.toString().padStart(3, '0')}`;
 
+  const onArtError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const el = e.currentTarget;
+    if (!el.dataset.fbk) {
+      el.dataset.fbk = '1';
+      el.src = '/artworks/placeholder.svg';
+    }
+  };
+
   if (variant === 'compact') {
     return (
       <Link 
@@ -55,6 +63,7 @@ export function CombinationCard({
             <motion.img
               src={combination.artwork_url}
               alt={combination.title}
+              onError={onArtError}
               className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
             />
           ) : (
@@ -187,6 +196,7 @@ export function CombinationCard({
               <motion.img
                 src={combination.artwork_url}
                 alt={combination.title}
+                onError={onArtError}
                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                 loading="lazy"
               />
@@ -234,12 +244,13 @@ export function CombinationCard({
             className="block w-full h-full"
             aria-label={locale === 'es' ? `Ver ${combination.title}` : `View ${combination.title}`}
           >
-            <motion.img
-              src={combination.artwork_url}
-              alt={combination.title}
-              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
+              <motion.img
+                src={combination.artwork_url}
+                alt={combination.title}
+                onError={onArtError}
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                loading="lazy"
+              />
           </Link>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-chess-surface-elevated to-chess-surface">

@@ -3,11 +3,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  Bot, 
-  X, 
-  Send, 
-  Loader2, 
+import {
+  Bot,
+  X,
+  Send,
+  Loader2,
   Sparkles,
   ChessRook,
   Palette,
@@ -19,73 +19,16 @@ import {
   Volume2,
   VolumeX,
   Copy,
-  Check
+  Check,
+  Share2,
+  ClipboardPaste,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import type { AIMessage, ChessContext } from '@/types/combination';
 
-// Type declarations for Web Speech API
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: (event: SpeechRecognitionErrorEvent) => void;
-  onend: () => void;
-  start: () => void;
-  stop: () => void;
-}
-
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognitionResultList {
-  length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  isFinal: boolean;
-  length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
-interface SpeechSynthesisUtterance {
-  text: string;
-  lang: string;
-  onend: () => void;
-  onerror: (event: SpeechSynthesisErrorEvent) => void;
-}
-
-interface SpeechSynthesisErrorEvent extends Event {
-  error: string;
-}
-
-interface Window {
-  SpeechRecognition: {
-    new(): SpeechRecognition;
-  };
-  webkitSpeechRecognition: {
-    new(): SpeechRecognition;
-  };
-}
-
+// Web Speech API via feature detection ((window as any)) to avoid DOM lib conflicts.
 const QUICK_ACTIONS = [
   { id: 'explain-position', label: 'Explicar esta posición', icon: ChessRook },
   { id: 'find-tactic', label: 'Encontrar la táctica', icon: Zap },
@@ -111,11 +54,119 @@ export function AIChatWidget({ initialContext, locale = 'es' }: AIChatWidgetProp
   const [speechSupported, setSpeechSupported] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const synthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const w = window as any;
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (SR) {
+      try {
+        const recognition = new SR();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = locale === 'es' ? 'es-ES' : 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const transcript = Array.from(event.results)
+            .map((result: any) => result[0].transcript)
+            .join('');
+          setInputValue(transcript);
+        };
+
+        recognition.onerror = () => {
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      } catch {
+        recognitionRef.current = null;
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      setSpeechSupported(true);
+    } else {
+      setSpeechSupported(!!SR);
+    }
+  }, [locale]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInputValue('');
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  const speakText = (text: string) => {
+    try {
+      const synth = (window as any).speechSynthesis;
+      if (!synth) return;
+      synth.cancel();
+      const Utterance = (window as any).SpeechSynthesisUtterance || SpeechSynthesisUtterance;
+      const utterance = new Utterance(text);
+      utterance.lang = locale === 'es' ? 'es-ES' : 'en-US';
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      synth.speak(utterance);
+    } catch {
+      // TTS no disponible en este navegador
+    }
+  };
+
+  const stopSpeaking = () => {
+    try {
+      (window as any).speechSynthesis?.cancel();
+    } catch {
+      // noop
+    }
+  };
+
+  const pasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) setInputValue((prev) => (prev ? prev + ' ' + text : text));
+    } catch {
+      // Portapapeles no accesible (permisos del navegador)
+    }
+  };
+
+  const copyMessage = async (messageId: string, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const shareMessage = async (messageId: string, content: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Chess Art & AI Academy',
+          text: content,
+        });
+      } catch (err) {
+        console.error('Failed to share:', err);
+      }
+    }
+  };
 
   const t = locale === 'es' ? {
-    title: 'Chess AI',
+    title: 'Chess AI Art',
     placeholder: 'Pregunta sobre ajedrez, arte o la combinación actual...',
     thinking: 'Pensando...',
     quickActions: 'Acciones rápidas',
@@ -127,7 +178,7 @@ export function AIChatWidget({ initialContext, locale = 'es' }: AIChatWidgetProp
     analysis: '📊 Análisis de posiciones y partidas',
     training: '🧠 Entrenamiento y ejercicios',
   } : {
-    title: 'Chess AI',
+    title: 'Chess AI Art',
     placeholder: 'Ask about chess, art, or the current combination...',
     thinking: 'Thinking...',
     quickActions: 'Quick Actions',
@@ -218,26 +269,30 @@ Current combination context:
           if (done) break;
           const chunk = decoder.decode(value);
           assistantContent += chunk;
-          setMessages(prev => prev.map(m => 
+          setMessages(prev => prev.map(m =>
             m.id === assistantMessageId ? { ...m, content: assistantContent } : m
           ));
         }
+      }
+
+      if (autoSpeak && assistantContent.trim()) {
+        speakText(assistantContent);
       }
     } catch (error) {
       console.error('AI Chat error:', error);
       const errorMessage: AIMessage = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: locale === 'es' 
-          ? 'Lo siento, ha ocurrido un error. Inténtalo de nuevo.' 
-          : 'Sorry, an error occurred. Please try again.',
+        content: locale === 'es'
+          ? 'Lo siento, no he podido responder. Revisa tu conexión y que la clave de IA (OPENROUTER_API_KEY u OPENAI_API_KEY) esté configurada en el servidor, e inténtalo de nuevo.'
+          : 'Sorry, I could not respond. Check your connection and that the AI key (OPENROUTER_API_KEY or OPENAI_API_KEY) is configured on the server, then try again.',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
-  }, [messages, initialContext, locale]);
+  }, [messages, initialContext, locale, autoSpeak]);
 
   const handleQuickAction = (actionId: string) => {
     const prompts: Record<string, string> = {
@@ -291,15 +346,30 @@ Current combination context:
                 </div>
                 <span className="font-semibold text-white">{t.title}</span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-white"
-                aria-label="Cerrar chat"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setAutoSpeak((v) => !v);
+                    if (autoSpeak) stopSpeaking();
+                  }}
+                  className={cn('h-8 w-8', autoSpeak ? 'text-blue-400' : 'text-slate-400 hover:text-white')}
+                  aria-label={locale === 'es' ? 'Lectura automática' : 'Auto read aloud'}
+                  title={locale === 'es' ? 'Lectura automática' : 'Auto read aloud'}
+                >
+                  {autoSpeak ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8 text-slate-400 hover:text-white"
+                  aria-label={locale === 'es' ? 'Cerrar chat' : 'Close chat'}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
 
             <ScrollArea className="flex-1 min-h-[300px] max-h-[500px] p-4 space-y-4">
@@ -327,6 +397,43 @@ Current combination context:
                     )}
                   >
                     <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
+                    {message.content && message.id !== 'welcome' && (
+                      <div className="flex items-center gap-1 mt-2 pt-1 border-t border-slate-700/50">
+                        {message.role === 'assistant' && (
+                          <button
+                            type="button"
+                            onClick={() => speakText(message.content)}
+                            className="p-1 rounded text-slate-400 hover:text-blue-300 transition-colors"
+                            aria-label={locale === 'es' ? 'Leer en voz alta' : 'Read aloud'}
+                            title={locale === 'es' ? 'Leer en voz alta' : 'Read aloud'}
+                          >
+                            <Volume2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => copyMessage(message.id, message.content)}
+                          className="p-1 rounded text-slate-400 hover:text-blue-300 transition-colors"
+                          aria-label={locale === 'es' ? 'Copiar' : 'Copy'}
+                          title={locale === 'es' ? 'Copiar' : 'Copy'}
+                        >
+                          {copiedMessageId === message.id ? (
+                            <Check className="h-3.5 w-3.5 text-green-400" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => shareMessage(message.id, message.content)}
+                          className="p-1 rounded text-slate-400 hover:text-blue-300 transition-colors"
+                          aria-label={locale === 'es' ? 'Compartir' : 'Share'}
+                          title={locale === 'es' ? 'Compartir' : 'Share'}
+                        >
+                          <Share2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {message.role === 'user' && (
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
@@ -392,12 +499,39 @@ Current combination context:
                     }
                   }}
                 />
+                <div className="flex flex-col gap-1">
+                  <Button
+                    type="button"
+                    size="icon"
+                    onClick={toggleListening}
+                    disabled={!speechSupported || isLoading}
+                    className={cn(
+                      'h-8 w-8 shrink-0',
+                      isListening ? 'text-red-400 animate-pulse' : 'text-slate-400 hover:text-blue-300',
+                      'disabled:opacity-30'
+                    )}
+                    aria-label={locale === 'es' ? 'Voz a texto' : 'Voice to text'}
+                    title={locale === 'es' ? 'Voz a texto' : 'Voice to text'}
+                  >
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="icon"
+                    onClick={pasteFromClipboard}
+                    className="h-8 w-8 shrink-0 text-slate-400 hover:text-blue-300"
+                    aria-label={locale === 'es' ? 'Pegar' : 'Paste'}
+                    title={locale === 'es' ? 'Pegar' : 'Paste'}
+                  >
+                    <ClipboardPaste className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Button
                   type="submit"
                   size="icon"
                   disabled={!inputValue.trim() || isLoading}
-                  className="text-blue-400 hover:text-blue-300 disabled:opacity-30"
-                  aria-label="Enviar mensaje"
+                  className="text-blue-400 hover:text-blue-300 disabled:opacity-30 self-end"
+                  aria-label={locale === 'es' ? 'Enviar mensaje' : 'Send message'}
                 >
                   {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                 </Button>
@@ -407,45 +541,28 @@ Current combination context:
         )}
       </AnimatePresence>
 
-      <motion.button
-        id="agent-toggle"
-        onClick={() => setIsOpen(true)}
-        initial={{ scale: 1 }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="fixed bottom-6 right-6 z-40 lg:hidden p-3 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
-        aria-label="Abrir chat con Chess AI"
-      >
-        <div className="relative">
-          <Bot className="h-6 w-6 text-blue-400" />
-          <motion.span
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"
-          />
-        </div>
-        <span className="font-medium text-sm">Chess AI</span>
-      </motion.button>
-
-      <motion.button
-        id="agent-toggle"
-        onClick={() => setIsOpen(true)}
-        initial={{ scale: 1 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="fixed bottom-6 right-6 z-40 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
-        aria-label="Abrir chat con Chess AI"
-      >
-        <div className="relative">
-          <Bot className="h-5 w-5 text-blue-400" />
-          <motion.span
-            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full"
-          />
-        </div>
-        <span className="font-medium text-sm">Chess AI</span>
-      </motion.button>
+      {!isOpen && (
+        <motion.button
+          id="agent-toggle"
+          onClick={() => setIsOpen(true)}
+          initial={{ scale: 1 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed bottom-6 right-6 z-40 px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-full shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-colors"
+          aria-label={locale === 'es' ? 'Abrir chat con Chess AI Art' : 'Open Chess AI Art chat'}
+          title="Chess AI Art"
+        >
+          <div className="relative">
+            <Bot className="h-5 w-5 text-blue-400" />
+            <motion.span
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full"
+            />
+          </div>
+          <span className="font-medium text-sm">Chess AI Art</span>
+        </motion.button>
+      )}
     </>
   );
 }
