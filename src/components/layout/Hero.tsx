@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { HeroBackdrop } from './HeroBackdrop';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, ChessRook, Palette, Brain } from 'lucide-react';
 import Link from 'next/link';
@@ -20,10 +21,12 @@ export function Hero({ locale = 'es' }: HeroProps) {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-20 md:pt-24 pb-16">
-      {/* Background layers */}
-      <div className="absolute inset-0 hero-gradient-mesh" aria-hidden="true" />
-      <div className="absolute inset-0 hero-bg-grid" aria-hidden="true" />
+    <section className="relative min-h-screen overflow-hidden pt-20 md:pt-24 pb-44">
+      {/* Fondo interactivo: 5 obras emblemáticas en rotación */}
+      <HeroBackdrop locale={locale} />
+      {/* Texturas sobre el fondo */}
+      <div className="absolute inset-0 hero-gradient-mesh opacity-70 pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-0 hero-bg-grid opacity-70 pointer-events-none" aria-hidden="true" />
       
       {/* Floating gold particles */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
