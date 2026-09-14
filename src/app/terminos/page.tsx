@@ -35,7 +35,7 @@ const CONTENT = {
       },
       {
         h: '6. Contacto',
-        p: 'Para permisos, colaboraciones o avisos de contenido escribe a pablo.iglesias@chessart.ai o usa la página de contacto.',
+        p: 'Para permisos, colaboraciones o avisos de contenido escribe a chessaiagency@gmail.com o usa la página de contacto.',
       },
     ],
   },
@@ -67,7 +67,7 @@ const CONTENT = {
       },
       {
         h: '6. Contact',
-        p: 'For permissions, collaborations or content notices write to pablo.iglesias@chessart.ai or use the contact page.',
+        p: 'For permissions, collaborations or content notices write to chessaiagency@gmail.com or use the contact page.',
       },
     ],
   },

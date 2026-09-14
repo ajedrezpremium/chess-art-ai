@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Retrato ilustrado de Pablo Iglesias">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#C9A227" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="frame">
+      <rect x="0" y="0" width="256" height="256" rx="48"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect x="0" y="0" width="256" height="256" fill="#14141F"/>
+    <circle cx="128" cy="90" r="120" fill="url(#glow)"/>
+    <!-- chessboard hint -->
+    <g opacity="0.14">
+      <rect x="196" y="196" width="15" height="15" fill="#C9A227"/>
+      <rect x="226" y="196" width="15" height="15" fill="#E2E8F0"/>
+      <rect x="196" y="226" width="15" height="15" fill="#E2E8F0"/>
+      <rect x="226" y="226" width="15" height="15" fill="#C9A227"/>
+      <rect x="211" y="211" width="15" height="15" fill="#E2E8F0"/>
+    </g>
+
+    <!-- shoulders / blazer -->
+    <path d="M36,256 C36,206 76,188 128,188 C180,188 220,206 220,256 Z" fill="#1F2A44"/>
+    <path d="M36,256 C36,206 76,188 128,188 L128,256 Z" fill="#1B2438"/>
+    <!-- shirt -->
+    <path d="M110,188 L128,232 L146,188 Z" fill="#EDEDF2"/>
+    <path d="M110,188 L128,232 L119,188 Z" fill="#D7D7E0"/>
+    <!-- lapels -->
+    <path d="M110,188 L96,256 L122,256 L128,232 Z" fill="#27334F"/>
+    <path d="M146,188 L160,256 L134,256 L128,232 Z" fill="#27334F"/>
+    <!-- gold pawn pin -->
+    <g transform="translate(163,222)">
+      <circle cx="0" cy="-8" r="4.5" fill="#C9A227"/>
+      <path d="M-5,0 L5,0 L3.5,8 L-3.5,8 Z" fill="#C9A227"/>
+      <rect x="-6" y="8" width="12" height="3" rx="1.5" fill="#C9A227"/>
+    </g>
+
+    <!-- neck -->
+    <rect x="113" y="146" width="30" height="46" rx="12" fill="#B57A4E"/>
+    <!-- ears -->
+    <ellipse cx="83" cy="118" rx="8" ry="13" fill="#C68B59"/>
+    <ellipse cx="173" cy="118" rx="8" ry="13" fill="#C68B59"/>
+    <!-- head -->
+    <ellipse cx="128" cy="112" rx="45" ry="53" fill="#C68B59"/>
+    <!-- jaw shading -->
+    <path d="M96,148 C104,162 152,162 160,148 C152,168 104,168 96,148 Z" fill="#B57A4E" opacity="0.55"/>
+
+    <!-- hair: short dark with side part -->
+    <path d="M82,112 C78,62 100,42 128,42 C156,42 178,62 174,112 C172,96 168,88 164,82 C158,70 148,64 138,66 C146,70 148,76 146,80 C138,68 118,64 106,74 C98,81 94,94 94,108 C90,110 86,112 82,112 Z" fill="#26211C"/>
+    <path d="M96,60 C106,50 122,46 136,48" stroke="#3A332C" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <!-- sideburns -->
+    <rect x="82" y="104" width="8" height="26" rx="4" fill="#26211C"/>
+    <rect x="166" y="104" width="8" height="26" rx="4" fill="#26211C"/>
+
+    <!-- eyebrows -->
+    <rect x="96" y="102" width="24" height="6" rx="3" fill="#241F1A" transform="rotate(-4 108 105)"/>
+    <rect x="136" y="102" width="24" height="6" rx="3" fill="#241F1A" transform="rotate(4 148 105)"/>
+    <!-- eyes -->
+    <ellipse cx="108" cy="120" rx="10" ry="7" fill="#F5F0E8"/>
+    <ellipse cx="148" cy="120" rx="10" ry="7" fill="#F5F0E8"/>
+    <circle cx="109" cy="121" r="4.2" fill="#4A2E1A"/>
+    <circle cx="147" cy="121" r="4.2" fill="#4A2E1A"/>
+    <circle cx="110.5" cy="119.5" r="1.4" fill="#FFFFFF"/>
+    <circle cx="148.5" cy="119.5" r="1.4" fill="#FFFFFF"/>
+    <!-- nose -->
+    <path d="M128,126 L124,144 L133,144" stroke="#A86F42" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- smile + expression lines (~40) -->
+    <path d="M106,158 Q128,172 150,158" stroke="#7A4526" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M100,152 L104,156" stroke="#A86F42" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M156,152 L152,156" stroke="#A86F42" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>

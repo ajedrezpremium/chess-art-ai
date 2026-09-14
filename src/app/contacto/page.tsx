@@ -80,7 +80,7 @@ export default function ContactoPage() {
     if (message.trim().length < 10) return setError(t.errorMessage);
     setError('');
     const subject = encodeURIComponent(`[Chess Art] ${topic} — ${name}`);
-    window.location.href = `mailto:pablo.iglesias@chessart.ai?subject=${subject}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:chessaiagency@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
     setSent(true);
   };
 
@@ -197,8 +197,8 @@ export default function ContactoPage() {
 
           <p className="text-center text-sm text-chess-text-muted mt-6">
             {t.direct}{' '}
-            <a href="mailto:pablo.iglesias@chessart.ai" className="text-chess-gold hover:text-chess-gold-light underline underline-offset-2">
-              pablo.iglesias@chessart.ai
+            <a href="mailto:chessaiagency@gmail.com" className="text-chess-gold hover:text-chess-gold-light underline underline-offset-2">
+              chessaiagency@gmail.com
             </a>
           </p>
         </motion.div>

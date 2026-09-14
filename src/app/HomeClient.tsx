@@ -385,9 +385,11 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
               <div className="space-y-4">
                 <div className="glass p-6">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-chess-gold to-chess-gold-light flex items-center justify-center">
-                      <span className="text-2xl font-bold text-chess-bg">PI</span>
-                    </div>
+                    <img
+                      src="/artists/pablo-iglesias.svg"
+                      alt="Retrato ilustrado de Pablo Iglesias"
+                      className="w-16 h-16 rounded-2xl object-cover border border-chess-gold/30"
+                    />
                     <div>
                       <p className="font-semibold text-chess-text-primary">Pablo Iglesias</p>
                       <p className="text-sm text-chess-text-muted">{locale === 'es' ? 'Artista de la serie Top 100' : 'Top 100 Series Artist'}</p>
@@ -401,7 +403,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                   </p>
                   <div className="space-y-3">
                     <a 
-                      href="mailto:pablo.iglesias@chessart.ai" 
+                      href="mailto:chessaiagency@gmail.com" 
                       className="flex items-center gap-3 text-sm text-chess-text-secondary hover:text-chess-gold transition-colors group"
                     >
                       <span className="w-8 h-8 rounded-lg bg-chess-surface-elevated/50 flex items-center justify-center group-hover:bg-chess-gold/20 transition-colors">

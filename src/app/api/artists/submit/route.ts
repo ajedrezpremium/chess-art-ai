@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         {
           ok: false,
           error:
-            'Base de datos no disponible. Envía tu obra a pablo.iglesias@chessart.ai',
+            'Base de datos no disponible. Envía tu obra a chessaiagency@gmail.com',
         },
         { status: 503 }
       );
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
         {
           ok: false,
           error:
-            'No se pudo guardar (tabla pendiente de crear). Envía tu obra a pablo.iglesias@chessart.ai',
+            'No se pudo guardar (tabla pendiente de crear). Envía tu obra a chessaiagency@gmail.com',
         },
         { status: 503 }
       );

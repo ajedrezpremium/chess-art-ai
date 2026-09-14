@@ -78,9 +78,11 @@ export function ArtistasClient() {
           <div className="absolute inset-0 hero-gradient-mesh opacity-60 pointer-events-none" />
           <div className="relative flex flex-col md:flex-row gap-8">
             <div className="flex-shrink-0">
-              <div className="w-28 h-28 md:w-36 md:h-36 rounded-3xl bg-gradient-to-br from-chess-gold to-chess-gold-light flex items-center justify-center shadow-strong">
-                <span className="font-display text-4xl md:text-5xl font-bold text-chess-bg">PI</span>
-              </div>
+              <img
+                src="/artists/pablo-iglesias.svg"
+                alt="Retrato ilustrado de Pablo Iglesias"
+                className="w-28 h-28 md:w-36 md:h-36 rounded-3xl shadow-strong border border-chess-gold/30 object-cover"
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -259,7 +261,7 @@ export function ArtistasClient() {
                   <AlertCircle className="h-4 w-4" />
                   {es ? 'No se pudo enviar: ' : 'Could not submit: '}{errorMsg}
                   {' — '}
-                  <a className="underline" href={`mailto:pablo.iglesias@chessart.ai?subject=${encodeURIComponent('Nueva obra: ' + form.title)}`}>
+                  <a className="underline" href={`mailto:chessaiagency@gmail.com?subject=${encodeURIComponent('Nueva obra: ' + form.title)}`}>
                     {es ? 'enviar por email' : 'send by email'}
                   </a>
                 </p>
@@ -270,7 +272,7 @@ export function ArtistasClient() {
                   {es ? 'Enviar para revisión' : 'Submit for review'}
                 </button>
                 <span className="inline-flex items-center gap-1.5 text-xs text-chess-text-muted">
-                  <Mail className="h-3.5 w-3.5" /> pablo.iglesias@chessart.ai
+                  <Mail className="h-3.5 w-3.5" /> chessaiagency@gmail.com
                 </span>
               </div>
             </form>

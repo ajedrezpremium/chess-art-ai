@@ -27,7 +27,7 @@ const CONTENT = {
       },
       {
         h: '4. Tus derechos',
-        p: 'Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad de tus datos escribiendo a pablo.iglesias@chessart.ai. También puedes reclamar ante la autoridad de control de tu país.',
+        p: 'Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad de tus datos escribiendo a chessaiagency@gmail.com. También puedes reclamar ante la autoridad de control de tu país.',
       },
       {
         h: '5. Menores',
@@ -59,7 +59,7 @@ const CONTENT = {
       },
       {
         h: '4. Your rights',
-        p: 'You may request access, rectification, erasure, objection, restriction and portability of your data at pablo.iglesias@chessart.ai. You may also lodge a complaint with your national supervisory authority.',
+        p: 'You may request access, rectification, erasure, objection, restriction and portability of your data at chessaiagency@gmail.com. You may also lodge a complaint with your national supervisory authority.',
       },
       {
         h: '5. Children',
