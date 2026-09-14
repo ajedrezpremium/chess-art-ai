@@ -7,7 +7,7 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { cn } from '@/lib/utils';
 import { PGNViewer } from '@/components/chess/PGNViewer';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
-import { CombinationCard } from '@/components/combinations/CombinationCard';
+import { CombinationCard, CombinationVisual } from '@/components/combinations/CombinationCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Trophy, Brain, Palette, Share2, Download, ChevronLeft, ChevronRight, Heart, BookOpen, ExternalLink, ArrowRight, Sparkles } from 'lucide-react';
@@ -208,18 +208,11 @@ export function CombinationDetailClient({ combination }: CombinationDetailClient
                     />
                   )}
 
-                  {activeTab === 'artwork' && combination.artwork_url && (
+                  {activeTab === 'artwork' && (
                     <div className="relative aspect-square rounded-xl overflow-hidden bg-chess-surface border border-chess-border/50">
-                      <img
-                        src={combination.artwork_url}
-                        alt={combination.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const img = e.currentTarget;
-                          if (!img.src.endsWith('/artworks/placeholder.svg')) {
-                            img.src = '/artworks/placeholder.svg';
-                          }
-                        }}
+                      <CombinationVisual
+                        combination={combination}
+                        imgClassName="w-full h-full object-cover"
                       />
                     </div>
                   )}

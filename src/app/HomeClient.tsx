@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Hero } from '@/components/layout/Hero';
-import { CombinationCard } from '@/components/combinations/CombinationCard';
+import { CombinationCard, CombinationVisual } from '@/components/combinations/CombinationCard';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { PGNViewer } from '@/components/chess/PGNViewer';
 import { getTranslations } from '@/lib/i18n';
@@ -97,11 +97,9 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                 <div className="relative">
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-chess-surface border border-chess-border/50">
                     {featured.artwork_url ? (
-                      <motion.img
-                        src={featured.artwork_url}
-                        alt={featured.title}
-                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-                        loading="lazy"
+                      <CombinationVisual
+                        combination={featured}
+                        imgClassName="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-chess-text-muted">
@@ -110,7 +108,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                         <p className="text-sm text-chess-text-muted">Próximamente</p>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent pointer-events-none" />
                   </div>
 
                   {featured.artist_notes && (
@@ -131,7 +129,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                 </div>
 
                 {/* Interactive Board Panel */}
-                <div className="relative">
+                <div className="relative w-full max-w-[560px] justify-self-center">
                   <div className="mb-6 flex flex-wrap items-center gap-2" role="tablist">
                     {[
                       { id: 'board', label: locale === 'es' ? 'Tablero Interactivo' : 'Interactive Board', icon: ChessRook },
@@ -436,39 +434,6 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
           </div>
         </motion.section>
 
-        {/* PGN Viewer Demo */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="py-16 lg:py-24 bg-chess-surface/30"
-        >
-          <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
-            <div className="text-center space-y-4 mb-10">
-              <h2 className="font-display text-heading-lg text-chess-text-primary">
-                {translations.nav.pgn}
-              </h2>
-              <p className="text-chess-text-secondary max-w-2xl mx-auto">
-                {locale === 'es'
-                  ? 'Prueba el visor PGN interactivo con una partida de ejemplo'
-                  : 'Try the interactive PGN viewer with a sample game'}
-              </p>
-            </div>
-            <div className="glass-strong p-6 lg:p-8">
-              <PGNViewer
-                pgn={`[Event "Demo Game"]
-[White "Morphy"]
-[Black "Duke of Brunswick"]
-[Result "1-0"]
-[Date "1858.??.??"]
-
-1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8. Nc3 c6 9. Bg5 b5 10. Nxb5 cb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7 14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0`}
-                showControls={true}
-                showMoveList={true}
-              />
-            </div>
-          </div>
-        </motion.section>
       </main>
 
       <SiteFooter />

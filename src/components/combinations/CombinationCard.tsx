@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,50 @@ import { ChessRook, ExternalLink, Eye, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type { Combination } from '@/types/combination';
 import { DIFFICULTY_COLORS } from '@/lib/chess/pgn-utils';
+import { ChessBoardSvg } from '@/components/chess/ChessBoard';
+
+/**
+ * Visual de tarjeta: muestra la ilustración SOLO si carga de verdad;
+ * si no, el tablero real de la posición (siempre disponible, nunca roto).
+ */
+export function CombinationVisual({
+  combination,
+  imgClassName,
+}: {
+  combination: Combination;
+  imgClassName?: string;
+}) {
+  const [artOk, setArtOk] = useState(true);
+  useEffect(() => {
+    setArtOk(true);
+  }, [combination.artwork_url, combination.slug]);
+
+  // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
+  const hasRealArt =
+    !!combination.artwork_url && !combination.artwork_url.includes('placeholder');
+
+  if (hasRealArt && artOk) {
+    return (
+      <img
+        src={combination.artwork_url}
+        alt={combination.title}
+        onError={() => setArtOk(false)}
+        className={imgClassName}
+        loading="lazy"
+      />
+    );
+  }
+  return (
+    <div className="absolute inset-0">
+      <ChessBoardSvg
+        fen={combination.fen}
+        orientation="white"
+        coordinates={false}
+        style={{ width: '100%', height: '100%', maxWidth: 'none', aspectRatio: 'auto', border: 'none', borderRadius: 0 }}
+      />
+    </div>
+  );
+}
 
 const DIFFICULTY_LABELS_ES: Record<string, string> = {
   Beginner: 'Principiante',
@@ -44,14 +89,6 @@ export function CombinationCard({
 
   const formatNumber = (num: number) => `#${num.toString().padStart(3, '0')}`;
 
-  const onArtError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const el = e.currentTarget;
-    if (!el.dataset.fbk) {
-      el.dataset.fbk = '1';
-      el.src = '/artworks/placeholder.svg';
-    }
-  };
-
   if (variant === 'compact') {
     return (
       <Link 
@@ -59,18 +96,10 @@ export function CombinationCard({
         className="group flex items-center gap-4 p-4 bg-chess-surface/50 border border-chess-border/50 rounded-xl hover:border-chess-gold/50 hover:bg-chess-surface hover:shadow-medium transition-all duration-300 ease-out-expo"
       >
         <div className="relative flex-shrink-0 w-16 h-16 rounded-xl bg-chess-surface-elevated border border-chess-border/50 overflow-hidden">
-          {combination.artwork_url ? (
-            <motion.img
-              src={combination.artwork_url}
-              alt={combination.title}
-              onError={onArtError}
-              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <ChessRook className="h-8 w-8 text-chess-border" />
-            </div>
-          )}
+          <CombinationVisual
+            combination={combination}
+            imgClassName="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+          />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs font-mono text-chess-gold mb-1">{formatNumber(combination.number)}</p>
@@ -92,25 +121,16 @@ export function CombinationCard({
     return (
       <article className="group relative card-interactive overflow-hidden">
         <div className="relative aspect-[4/3] overflow-hidden">
-          {combination.artwork_url ? (
-            <Link
-              href={`/combinaciones/${combination.slug}`}
-              className="block w-full h-full"
-              aria-label={locale === 'es' ? `Ver ${combination.title}` : `View ${combination.title}`}
-            >
-              <motion.img
-                src={combination.artwork_url}
-                alt={combination.title}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-            </Link>
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-chess-text-muted bg-chess-surface-elevated">
-              <ChessRook className="h-16 w-16 text-chess-border" />
-              <p className="font-display text-chess-text-secondary">Ilustración próximamente</p>
-            </div>
-          )}
+          <Link
+            href={`/combinaciones/${combination.slug}`}
+            className="block w-full h-full"
+            aria-label={locale === 'es' ? `Ver ${combination.title}` : `View ${combination.title}`}
+          >
+            <CombinationVisual
+              combination={combination}
+              imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+            />
+          </Link>
           <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent group-hover:from-chess-bg/60 transition-all duration-500" />
           
           {/* Overlay with quick info */}
@@ -192,19 +212,10 @@ export function CombinationCard({
       >
         <Link href={`/combinaciones/${combination.slug}`} className="block">
           <div className="relative aspect-square overflow-hidden">
-            {combination.artwork_url ? (
-              <motion.img
-                src={combination.artwork_url}
-                alt={combination.title}
-                onError={onArtError}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-chess-surface-elevated">
-                <ChessRook className="h-12 w-12 text-chess-border" />
-              </div>
-            )}
+            <CombinationVisual
+              combination={combination}
+              imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent group-hover:from-chess-bg/60 transition-all duration-500" />
             
             {/* Overlay info */}
@@ -238,25 +249,16 @@ export function CombinationCard({
   return (
     <article className="card-interactive group flex flex-col h-full overflow-hidden">
       <div className="relative aspect-square overflow-hidden">
-        {combination.artwork_url ? (
-          <Link
-            href={`/combinaciones/${combination.slug}`}
-            className="block w-full h-full"
-            aria-label={locale === 'es' ? `Ver ${combination.title}` : `View ${combination.title}`}
-          >
-              <motion.img
-                src={combination.artwork_url}
-                alt={combination.title}
-                onError={onArtError}
-                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                loading="lazy"
-              />
-          </Link>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-chess-surface-elevated to-chess-surface">
-            <ChessRook className="h-12 w-12 text-chess-border" />
-          </div>
-        )}
+        <Link
+          href={`/combinaciones/${combination.slug}`}
+          className="block w-full h-full"
+          aria-label={locale === 'es' ? `Ver ${combination.title}` : `View ${combination.title}`}
+        >
+          <CombinationVisual
+            combination={combination}
+            imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+          />
+        </Link>
         <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent group-hover:from-chess-bg/60 transition-all duration-500" />
         <div className="absolute top-4 left-4 right-4 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <span className="text-xs font-mono text-chess-gold bg-chess-bg/80 px-2 py-1 rounded">
