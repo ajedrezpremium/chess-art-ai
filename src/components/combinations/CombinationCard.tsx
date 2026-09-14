@@ -28,8 +28,14 @@ export function CombinationVisual({
   // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
   const hasRealArt = !!url && !url.includes('placeholder') && !FAILED_ART.has(url);
   const [, forceBoard] = useState(false);
+  // La <img> solo se inserta tras hidratar: así el onError siempre está
+  // escuchando y ningún fallo previo a la hidratación queda huérfano.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  if (hasRealArt && url) {
+  if (hasRealArt && url && mounted) {
     return (
       <img
         src={url}
