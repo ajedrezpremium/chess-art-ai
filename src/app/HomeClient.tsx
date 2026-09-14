@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Hero } from '@/components/layout/Hero';
 import { CombinationCard } from '@/components/combinations/CombinationCard';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
@@ -462,24 +463,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
         </motion.section>
       </main>
 
-      <footer className="border-t border-chess-border/30 bg-chess-surface/50 py-10">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="font-display text-lg font-semibold gradient-text-gold">CHESS ART</span>
-            <span className="text-chess-text-muted">AI ACADEMY</span>
-          </div>
-          <p className="text-chess-text-muted text-sm">
-            {locale === 'es' 
-              ? 'Chess Art & AI Academy · 2025 · Todos los derechos reservados'
-              : 'Chess Art & AI Academy · 2025 · All rights reserved'}
-          </p>
-          <div className="mt-4 flex items-center justify-center gap-6 text-sm text-chess-text-muted">
-            <a href="#" className="hover:text-chess-gold transition-colors">{locale === 'es' ? 'Privacidad' : 'Privacy'}</a>
-            <a href="#" className="hover:text-chess-gold transition-colors">{locale === 'es' ? 'Términos' : 'Terms'}</a>
-            <a href="#" className="hover:text-chess-gold transition-colors">{locale === 'es' ? 'Contacto' : 'Contact'}</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <AIChatWidget initialContext={chessContext} locale={locale} />
     </div>

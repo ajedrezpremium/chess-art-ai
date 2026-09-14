@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { FreePGNViewer } from '@/components/chess/PGNViewer';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { getTranslations } from '@/lib/i18n';
@@ -49,11 +50,7 @@ export default function VisorPage() {
         </div>
       </main>
 
-      <footer className="border-t border-chess-border/30 bg-chess-surface/50 py-8">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 text-center text-chess-text-muted text-sm">
-          <p>Chess Art & AI Academy · {new Date().getFullYear()} · {getTranslations(locale).footer.rights}</p>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <AIChatWidget locale={locale} />
     </div>
