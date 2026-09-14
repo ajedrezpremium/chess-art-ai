@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Palette, BookOpen, Film, Image, Music, Users, ShoppingBag, ChevronDown } from 'lucide-react';
+import { Menu, X, Palette, BookOpen, Film, Image, Music, Users, ShoppingBag, ChevronDown, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTranslations } from '@/lib/i18n';
 
@@ -19,8 +19,8 @@ const navItems: Array<{ href: string; key: 'chess' | 'art' | 'books' | 'cinema' 
 ];
 
 const languages = [
-  { code: 'es', label: 'Español', flag: '🇪🇸', short: 'ES' },
-  { code: 'en', label: 'English', flag: '🇺🇸', short: 'EN' },
+  { code: 'es', label: 'Español', short: 'ES' },
+  { code: 'en', label: 'English', short: 'EN' },
 ] as const;
 
 interface HeaderProps {
@@ -148,8 +148,8 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
                       aria-expanded={isLangMenuOpen}
                       aria-haspopup="listbox"
                     >
-                      <span className="text-lg" aria-hidden="true">{languages.find(l => l.code === locale)?.flag}</span>
-                      <span className="hidden sm:inline font-medium text-sm">{languages.find(l => l.code === locale)?.short}</span>
+                      <Globe className="h-4 w-4" aria-hidden="true" />
+                      <span className="font-medium text-sm">{languages.find(l => l.code === locale)?.short}</span>
                       <ChevronDown className="h-4 w-4 transition-transform" />
                     </button>
 
@@ -172,7 +172,7 @@ export function Header({ locale: localeProp = 'es' }: HeaderProps) {
                           role="option"
                           aria-selected={locale === lang.code}
                         >
-                          <span className="text-lg" aria-hidden="true">{lang.flag}</span>
+                          <span className="w-8 text-center text-xs font-bold text-chess-gold">{lang.short}</span>
                           <span className="font-medium">{lang.label}</span>
                         </button>
                       ))}
