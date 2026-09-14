@@ -112,7 +112,9 @@
     "painting": "Painting",
     "sculpture": "Sculpture",
     "digital": "Digital",
-    "photography": "Photography"
+    "photography": "Photography",
+    "print": "Print/Poster",
+    "urban": "Street art"
   },
   "books": {
     "title": "CHESS LIBRARY",

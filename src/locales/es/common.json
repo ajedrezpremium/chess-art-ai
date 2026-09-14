@@ -117,7 +117,9 @@
     "painting": "Pintura",
     "sculpture": "Escultura",
     "digital": "Digital",
-    "photography": "Fotografía"
+    "photography": "Fotografía",
+    "print": "Grabado/Cartel",
+    "urban": "Arte urbano"
   },
   "books": {
     "title": "BIBLIOTECA AJEDREZ",

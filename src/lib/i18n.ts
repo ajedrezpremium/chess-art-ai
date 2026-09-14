@@ -121,6 +121,8 @@ export interface Translations {
     sculpture: string;
     digital: string;
     photography: string;
+    print: string;
+    urban: string;
   };
   books: {
     title: string;

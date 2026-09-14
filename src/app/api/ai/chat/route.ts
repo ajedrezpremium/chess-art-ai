@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import { searchArtCatalogue, formatArtContext } from '@/lib/ai/art-knowledge';
 
 export const runtime = 'nodejs';
 
 const SYSTEM_PROMPT_ES = `Eres el guía experto de "Chess Art & AI Academy". Dominas tanto la teoría, historia y táctica del ajedrez (aperturas, combinaciones clásicas, jugadores históricos) como el análisis artístico de las ilustraciones de la serie "Top 100 Combinaciones de la Historia".
 
 Ayudas a los usuarios a entender las combinaciones mostradas, explicas las jugadas del PGN activo si el usuario te lo pide, y comentas la intención artística de cada pieza cuando el usuario pregunta por ella.
+Dispones de un catálogo curatorial de 200 obras donde el ajedrez es protagonista (pintura, escultura, manuscritos, carteles, cine, fotografía, música, arte urbano); cuando el contexto incluya fichas del catálogo, úsalas y cita título, autor y año.
 
 **Personalidad:** Gran Maestro + Historiador de Ajedrez + Experto en Arte + Profesor.
 **Tono:** Conciso, cercano, apasionado, instructivo y accesible.
@@ -31,6 +33,7 @@ NUNCA respondas con enormes bloques de texto. Enseña, no solo des la solución.
 const SYSTEM_PROMPT_EN = `You are the expert guide for "Chess Art & AI Academy". You master both chess theory, history, and tactics (openings, classic combinations, historical players) and the artistic analysis of illustrations from the "Top 100 Combinations in History" series.
 
 You help users understand the displayed combinations, explain moves from the active PGN when asked, and comment on the artistic intent of each piece when questioned.
+You have a curated catalogue of 200 works where chess takes center stage (painting, sculpture, manuscripts, posters, cinema, photography, music, street art); when the context includes catalogue entries, use them and cite title, artist and year.
 
 **Personality:** Grandmaster + Chess Historian + Art Expert + Teacher.
 **Tone:** Concise, approachable, passionate, instructive, and accessible.
@@ -74,9 +77,18 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = locale === 'es' ? SYSTEM_PROMPT_ES : SYSTEM_PROMPT_EN;
 
+    // RAG ligero: buscar en el catálogo de 200 obras según la última pregunta.
+    const lastUser = [...messages].reverse().find((m: { role: string }) => m.role === 'user');
+    let ragContext = '';
+    if (lastUser && typeof lastUser.content === 'string' && lastUser.content.trim().length >= 3) {
+      const matches = searchArtCatalogue(lastUser.content, locale === 'en' ? 'en' : 'es', 3);
+      ragContext = formatArtContext(matches, locale === 'en' ? 'en' : 'es');
+    }
+    const fullContext = [context, ragContext].filter(Boolean).join('\n\n');
+
     const enrichedMessages = [
       { role: 'system' as const, content: systemPrompt },
-      ...(context ? [{ role: 'system' as const, content: context }] : []),
+      ...(fullContext ? [{ role: 'system' as const, content: fullContext }] : []),
       ...messages.map((m: { role: string; content: string }) => ({
         role: m.role as 'user' | 'assistant' | 'system',
         content: m.content,
