@@ -45,3 +45,5 @@ next-env.d.ts
 *.cbh
 *.cbg
 *.cba
+*.pgi
+data/*.ini

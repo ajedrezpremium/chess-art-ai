@@ -570,21 +570,20 @@ Current combination context:
             id="agent-toggle"
             onClick={() => setIsOpen(true)}
             initial={{ scale: 1 }}
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 text-white transition-all bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 border border-chess-gold/50 hover:border-chess-gold hover:shadow-[0_0_28px_-6px_rgba(201,162,39,0.55)]"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            className="p-3.5 rounded-full shadow-2xl flex items-center justify-center text-white transition-all bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 border border-chess-gold/50 hover:border-chess-gold hover:shadow-[0_0_28px_-6px_rgba(201,162,39,0.55)]"
             aria-label={locale === 'es' ? 'Abrir chat con Chess AI Art' : 'Open Chess AI Art chat'}
             title="Chess AI Art"
           >
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-chess-gold to-chess-gold-light">
-              <Bot className="h-4 w-4 text-chess-bg" />
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-chess-gold to-chess-gold-light">
+              <Bot className="h-5 w-5 text-chess-bg" />
               <motion.span
                 animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border border-slate-900"
               />
             </div>
-            <span className="font-display font-semibold text-sm tracking-wide">Chess AI Art</span>
           </motion.button>
         </div>
       )}
