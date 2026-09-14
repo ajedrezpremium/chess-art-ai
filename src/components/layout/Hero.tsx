@@ -20,7 +20,7 @@ export function Hero({ locale = 'es' }: HeroProps) {
   ];
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-36 md:pt-44 pb-16">
+    <section className="relative min-h-screen overflow-hidden pt-20 md:pt-24 pb-16">
       {/* Background layers */}
       <div className="absolute inset-0 hero-gradient-mesh" aria-hidden="true" />
       <div className="absolute inset-0 hero-bg-grid" aria-hidden="true" />
