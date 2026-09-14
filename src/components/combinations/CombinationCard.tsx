@@ -14,6 +14,9 @@ import { ChessBoardSvg } from '@/components/chess/ChessBoard';
  * Visual de tarjeta: muestra la ilustración SOLO si carga de verdad;
  * si no, el tablero real de la posición (siempre disponible, nunca roto).
  */
+/** URLs que ya fallaron: no se reintentan (evita parpadeos y condiciones de carrera). */
+const FAILED_ART = new Set<string>();
+
 export function CombinationVisual({
   combination,
   imgClassName,
@@ -21,21 +24,20 @@ export function CombinationVisual({
   combination: Combination;
   imgClassName?: string;
 }) {
-  const [artOk, setArtOk] = useState(true);
-  useEffect(() => {
-    setArtOk(true);
-  }, [combination.artwork_url, combination.slug]);
-
+  const url = combination.artwork_url;
   // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
-  const hasRealArt =
-    !!combination.artwork_url && !combination.artwork_url.includes('placeholder');
+  const hasRealArt = !!url && !url.includes('placeholder') && !FAILED_ART.has(url);
+  const [, forceBoard] = useState(false);
 
-  if (hasRealArt && artOk) {
+  if (hasRealArt && url) {
     return (
       <img
-        src={combination.artwork_url}
+        src={url}
         alt={combination.title}
-        onError={() => setArtOk(false)}
+        onError={() => {
+          FAILED_ART.add(url);
+          forceBoard((v) => !v);
+        }}
         className={imgClassName}
         loading="lazy"
       />
