@@ -67,8 +67,20 @@ export function formatArtContext(matches: ArtMatch[], locale: 'es' | 'en'): stri
     locale === 'es'
       ? 'Catálogo de referencia (200 obras arte+ajedrez; úsalo para responder con datos concretos y cita título/autor/año):'
       : 'Reference catalogue (200 chess+art works; use it to answer with concrete data, citing title/artist/year):';
-  const lines = matches.map(
-    (m) => `• ${m.work.title} — ${m.work.artist} (${m.work.year}) [${m.work.discipline}/${m.work.category}]: ${m.work.note} Tags: ${m.work.tags.join(', ')}.`
-  );
+  const lines = matches.map((m) => {
+    const w = m.work;
+    const extra = [
+      w.period ? `Época: ${w.period}` : '',
+      w.institution ? `Sede: ${[w.institution, w.city, w.country].filter(Boolean).join(', ')}` : '',
+      w.license ? `Licencia: ${w.license}` : '',
+      w.chessRole ? `Rol: ${w.chessRole}` : '',
+      w.sources && w.sources.length > 0
+        ? `Fuentes: ${w.sources.map((s) => `${s.name} (${s.url})`).join(' | ')}`
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    return `• ${w.title} — ${w.artist} (${w.year}) [${w.discipline}/${w.category}]: ${w.note}${w.chessNote ? ' ' + w.chessNote : ''} Tags: ${w.tags.join(', ')}.${extra ? ' ' + extra : ''}`;
+  });
   return `${head}\n${lines.join('\n')}`;
 }

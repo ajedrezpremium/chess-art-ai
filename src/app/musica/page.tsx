@@ -34,9 +34,14 @@ export default function MusicaPage() {
     category: w.category,
     year: w.year,
     author: w.artist,
-    description: w.note,
+    description: w.chessNote ? `${w.note} ${w.chessNote}` : w.note,
     tags: w.tags,
     type: w.category,
+    period: w.period,
+    location: [w.institution, w.city, w.country].filter(Boolean).join(', ') || undefined,
+    license: w.license,
+    chessRole: w.chessRole,
+    sources: w.sources,
   }));
 
   return (

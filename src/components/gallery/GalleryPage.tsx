@@ -5,6 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, LayoutGrid, List, X, Maximize2, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+export interface GallerySource {
+  name: string;
+  type: string;
+  url: string;
+}
+
 export interface GalleryItem {
   id: string;
   title: string;
@@ -15,6 +21,11 @@ export interface GalleryItem {
   description: string;
   tags: string[];
   type: string;
+  period?: string;
+  location?: string;
+  license?: string;
+  chessRole?: string;
+  sources?: GallerySource[];
 }
 
 interface GalleryPageProps {
@@ -274,6 +285,55 @@ export function GalleryPage({
                     ? locale === 'es' ? 'Leer menos' : 'Read less'
                     : locale === 'es' ? 'Leer más' : 'Read more'}
                 </button>
+                {(selectedItem.period || selectedItem.location || selectedItem.license || selectedItem.chessRole) && (
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 pt-2 text-sm">
+                    {selectedItem.period && (
+                      <div className="flex gap-2">
+                        <dt className="text-chess-text-muted">{locale === 'es' ? 'Época' : 'Period'}:</dt>
+                        <dd className="text-chess-text-secondary">{selectedItem.period}</dd>
+                      </div>
+                    )}
+                    {selectedItem.location && (
+                      <div className="flex gap-2">
+                        <dt className="text-chess-text-muted">{locale === 'es' ? 'Ubicación' : 'Location'}:</dt>
+                        <dd className="text-chess-text-secondary">{selectedItem.location}</dd>
+                      </div>
+                    )}
+                    {selectedItem.license && (
+                      <div className="flex gap-2">
+                        <dt className="text-chess-text-muted">{locale === 'es' ? 'Licencia' : 'License'}:</dt>
+                        <dd className="text-chess-text-secondary">{selectedItem.license}</dd>
+                      </div>
+                    )}
+                    {selectedItem.chessRole && (
+                      <div className="flex gap-2">
+                        <dt className="text-chess-text-muted">{locale === 'es' ? 'Rol' : 'Role'}:</dt>
+                        <dd className="text-chess-text-secondary">{selectedItem.chessRole}</dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
+                {selectedItem.sources && selectedItem.sources.length > 0 && (
+                  <div className="pt-2">
+                    <p className="text-xs font-medium text-chess-text-muted mb-2">
+                      {locale === 'es' ? 'Fuentes oficiales' : 'Official sources'}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {selectedItem.sources.map((s) => (
+                        <li key={s.url}>
+                          <a
+                            href={s.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-chess-gold hover:text-chess-gold-light underline underline-offset-2 transition-colors"
+                          >
+                            {s.name} ↗
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 pt-2 border-t border-chess-border/40">
                   {selectedItem.tags.map((tag) => (
                     <span

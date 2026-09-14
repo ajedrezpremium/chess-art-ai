@@ -5,6 +5,26 @@
 // `image`: ruta local en public/artworks. Mientras no exista la imagen real,
 // las galerías usan el placeholder de la disciplina + fallback automático.
 
+export interface ArtSource {
+  name: string;
+  type: 'official_museum' | 'digital_library' | 'imdb' | 'academic' | 'wikipedia' | 'youtube';
+  url: string;
+}
+
+export type ChessRole = 'central_theme' | 'metaphor' | 'prop_object' | 'historical_record';
+
+/** Categorías del esquema curatorial (v. propuesta tech /obras). */
+export type SchemaCategory =
+  | 'pintura_clasica'
+  | 'arte_moderno_vanguardias'
+  | 'escultura_instalaciones'
+  | 'manuscritos_libros'
+  | 'carteleria_grafismo'
+  | 'cine_audiovisual'
+  | 'fotografia'
+  | 'musica_ballet'
+  | 'arte_urbano_diseno';
+
 export interface ArtWork {
   id: string;
   discipline: 'art' | 'books' | 'cinema' | 'music';
@@ -15,6 +35,62 @@ export interface ArtWork {
   note: string;
   tags: string[];
   image: string;
+  // --- Campos del esquema curatorial (opcionales; se rellenan de forma gradual y verificada) ---
+  titleEn?: string;
+  titleOriginal?: string;
+  nationality?: string;
+  birthYear?: number | null;
+  deathYear?: number | null;
+  period?: string;
+  institution?: string;
+  city?: string;
+  country?: string;
+  license?: string;
+  chessRole?: ChessRole;
+  chessNote?: string;
+  sources?: ArtSource[];
+  schemaCategory?: SchemaCategory;
+}
+
+/** Slug estable para futuras rutas dinámicas (/obras/[slug] con generateStaticParams). */
+export function workSlug(w: Pick<ArtWork, 'artist' | 'title' | 'year'>): string {
+  const base = `${w.artist} ${w.title} ${w.year}`
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return base.slice(0, 90) || 'obra';
+}
+
+/** Deriva la categoría del esquema curatorial desde (disciplina, categoría local, año). */
+export function toSchemaCategory(w: Pick<ArtWork, 'discipline' | 'category' | 'year' | 'schemaCategory'>): SchemaCategory {
+  if (w.schemaCategory) return w.schemaCategory as SchemaCategory;
+  const y = parseInt((w.year.match(/\d{3,4}/) || ['0'])[0], 10);
+  switch (w.discipline) {
+    case 'books':
+      return 'manuscritos_libros';
+    case 'cinema':
+      return 'cine_audiovisual';
+    case 'music':
+      return 'musica_ballet';
+    default:
+      break;
+  }
+  switch (w.category) {
+    case 'sculpture':
+      return 'escultura_instalaciones';
+    case 'photography':
+      return 'fotografia';
+    case 'print':
+      return 'carteleria_grafismo';
+    case 'urban':
+    case 'digital':
+      return 'arte_urbano_diseno';
+    default:
+      break;
+  }
+  return y !== 0 && y < 1800 ? 'pintura_clasica' : 'arte_moderno_vanguardias';
 }
 
 const img = (d: ArtWork['discipline']) =>
@@ -32,7 +108,26 @@ function w(
 
 export const ART_CATALOGUE: ArtWork[] = [
 // ---- Pintura clásica y Renacimiento (1-10) ----
-w('art-001','art','painting',"El juego de ajedrez","Sofonisba Anguissola","1555","Retrato de tres hermanas jugando al ajedrez; una de las primeras representaciones femeninas del juego.",["Renacimiento","Italia","Mujeres en el ajedrez"]),
+{
+    ...w('art-001','art','painting',"El juego de ajedrez","Sofonisba Anguissola","1555","Retrato de tres hermanas jugando al ajedrez; una de las primeras representaciones femeninas del juego.",["Renacimiento","Italia","Mujeres en el ajedrez"]),
+    titleEn: 'The Chess Game',
+    titleOriginal: 'Il gioco degli scacchi',
+    nationality: 'Italiana',
+    birthYear: 1532,
+    deathYear: 1625,
+    period: 'Renacimiento',
+    institution: 'Muzeum Narodowe w Poznaniu',
+    city: 'Poznań',
+    country: 'Polonia',
+    license: 'Public Domain',
+    chessRole: 'central_theme',
+    chessNote: 'Pintura renacentista que retrata a las hermanas de la artista jugando una partida, destacando la dimensión intelectual de la mujer en el Renacimiento.',
+    schemaCategory: 'pintura_clasica',
+    sources: [
+      { name: 'Muzeum Narodowe w Poznaniu', type: 'official_museum', url: 'https://mnp.art.pl/' },
+      { name: 'Wikipedia - El juego de ajedrez', type: 'wikipedia', url: 'https://es.wikipedia.org/wiki/El_juego_de_ajedrez_(Sofonisba_Anguissola)' },
+    ],
+  },
 w('art-002','art','painting',"Los jugadores de ajedrez","Lucas van Leyden","c. 1508","Partida en interior flamenco, testimonio temprano del ajedrez en la pintura del norte.",["Renacimiento","Flandes"]),
 w('art-003','art','painting',"Los jugadores de ajedrez","Giulio Campi","c. 1530","Escena cortesana lombarda en torno al tablero.",["Renacimiento","Italia"]),
 w('art-004','art','painting',"El juego de ajedrez","Liberale da Verona","c. 1475","Una de las representaciones pictóricas más antiguas del ajedrez europeo.",["Quattrocento","Italia"]),
