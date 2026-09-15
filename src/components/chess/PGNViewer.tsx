@@ -292,7 +292,7 @@ export function PGNViewer({
           />
         </div>
 
-        <div className="w-full max-w-[600px] shrink-0">
+        <div className="w-full max-w-[560px] shrink-0">
           <ChessBoardSvg
             fen={chessRef.current.fen()}
             orientation={orientation}

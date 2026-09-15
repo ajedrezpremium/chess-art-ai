@@ -117,14 +117,14 @@ export async function POST(req: NextRequest) {
     }
     const fullContext = [context, ragContext].filter(Boolean).join('\n\n');
 
-    const enrichedMessages = [
-      { role: 'system' as const, content: systemPrompt },
-      ...(fullContext ? [{ role: 'system' as const, content: fullContext }] : []),
-      ...messages.map((m: { role: string; content: string }) => ({
-        role: m.role as 'user' | 'assistant' | 'system',
-        content: m.content,
-      })),
-    ];
+    // OpenRouter (vía endpoints compatibles) no acepta mensajes `system`:
+    // el prompt de sistema + contexto van en `instructions` y el historial
+    // solo lleva user/assistant (cualquier system heredado se degrada a user).
+    const instructions = [systemPrompt, fullContext].filter(Boolean).join('\n\n');
+    const coreMessages = messages.map((m: { role: string; content: string }) => ({
+      role: (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant',
+      content: m.content,
+    }));
 
     // OpenAI directa: un solo modelo económico (respuesta completa + stream simulado).
     if (!process.env.OPENROUTER_API_KEY && process.env.OPENAI_API_KEY) {
@@ -132,7 +132,8 @@ export async function POST(req: NextRequest) {
         const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
         const { text } = await generateText({
           model: openai('gpt-4o-mini'),
-          messages: enrichedMessages,
+          instructions,
+          messages: coreMessages,
           temperature: 0.7,
           maxOutputTokens: 1000,
         });
@@ -178,7 +179,8 @@ export async function POST(req: NextRequest) {
       try {
         const { text } = await generateText({
           model: openrouter(modelId),
-          messages: enrichedMessages,
+          instructions,
+          messages: coreMessages,
           temperature: 0.7,
           maxOutputTokens: 1000,
         });
