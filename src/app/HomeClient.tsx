@@ -129,7 +129,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                 </div>
 
                 {/* Interactive Board Panel */}
-                <div className="relative w-full max-w-[560px] justify-self-center">
+                <div className="relative w-full max-w-[520px] justify-self-center">
                   <div className="mb-6 flex flex-wrap items-center gap-2" role="tablist">
                     {[
                       { id: 'board', label: locale === 'es' ? 'Tablero Interactivo' : 'Interactive Board', icon: ChessRook },

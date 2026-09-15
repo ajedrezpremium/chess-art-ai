@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ChessRook, ExternalLink, Eye, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type { Combination } from '@/types/combination';
-import { DIFFICULTY_COLORS } from '@/lib/chess/pgn-utils';
+import { DIFFICULTY_COLORS, parsePGN, normalizeFen } from '@/lib/chess/pgn-utils';
 import { ChessBoardSvg } from '@/components/chess/ChessBoard';
 
 /**
@@ -27,6 +27,19 @@ export function CombinationVisual({
   const url = combination.artwork_url;
   // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
   const hasRealArt = !!url && !url.includes('placeholder') && !FAILED_ART.has(url);
+  // Diagrama correcto: la posición INICIAL del fragmento PGN (el momento
+  // de la combinación), no el campo `fen` suelto de la base.
+  const diagramFen = useMemo(() => {
+    try {
+      if (combination.pgn) {
+        const parsed = parsePGN(combination.pgn);
+        if (parsed?.initialFen) return normalizeFen(parsed.initialFen);
+      }
+    } catch {
+      /* usar fen de la base */
+    }
+    return normalizeFen(combination.fen);
+  }, [combination.pgn, combination.fen]);
   const [, forceBoard] = useState(false);
   // La <img> solo se inserta tras hidratar: así el onError siempre está
   // escuchando y ningún fallo previo a la hidratación queda huérfano.
@@ -52,7 +65,7 @@ export function CombinationVisual({
   return (
     <div className="absolute inset-0">
       <ChessBoardSvg
-        fen={combination.fen}
+        fen={diagramFen}
         orientation="white"
         coordinates={false}
         style={{ width: '100%', height: '100%', maxWidth: 'none', aspectRatio: 'auto', border: 'none', borderRadius: 0 }}
