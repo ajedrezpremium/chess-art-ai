@@ -285,18 +285,10 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                   >
                     <Link href={`/combinaciones/${combination.slug}`} className="block">
                       <div className="relative aspect-square overflow-hidden">
-                        {combination.artwork_url ? (
-                          <motion.img
-                            src={combination.artwork_url}
-                            alt={combination.title}
-                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-chess-surface-elevated">
-                            <ChessRook className="h-12 w-12 text-chess-border" />
-                          </div>
-                        )}
+                        <CombinationVisual
+                          combination={combination}
+                          imgClassName="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent group-hover:from-chess-bg/60 transition-all duration-500" />
                         
                         {/* Overlay info */}
