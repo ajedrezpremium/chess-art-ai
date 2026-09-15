@@ -27,9 +27,11 @@ export function CombinationVisual({
   const url = combination.artwork_url;
   // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
   const hasRealArt = !!url && !url.includes('placeholder') && !FAILED_ART.has(url);
-  // Diagrama correcto: la posición INICIAL del fragmento PGN (el momento
-  // de la combinación), no el campo `fen` suelto de la base.
+  // Diagrama: el `fen` curado de la base es la posición clave; solo si
+  // falta o es la inicial genérica se deriva del inicio del fragmento PGN.
   const diagramFen = useMemo(() => {
+    const base = normalizeFen(combination.fen);
+    if (base && base !== normalizeFen('')) return base;
     try {
       if (combination.pgn) {
         const parsed = parsePGN(combination.pgn);
@@ -38,7 +40,7 @@ export function CombinationVisual({
     } catch {
       /* usar fen de la base */
     }
-    return normalizeFen(combination.fen);
+    return base;
   }, [combination.pgn, combination.fen]);
   const [, forceBoard] = useState(false);
   // La <img> solo se inserta tras hidratar: así el onError siempre está
