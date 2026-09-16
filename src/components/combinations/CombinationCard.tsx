@@ -68,7 +68,7 @@ export function CombinationVisual({
     );
   }
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
       <ChessBoardSvg
         fen={diagramFen}
         orientation="white"

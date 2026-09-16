@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Hero } from '@/components/layout/Hero';
 import { CombinationCard, CombinationVisual } from '@/components/combinations/CombinationCard';
+import { DailyLesson } from '@/components/chess/DailyLesson';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { PGNViewer } from '@/components/chess/PGNViewer';
 import { getTranslations } from '@/lib/i18n';
@@ -28,7 +29,6 @@ interface HomeClientProps {
 
 export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
   const [locale, setLocale] = useState<'es' | 'en'>('es');
-  const [activeTab, setActiveTab] = useState<'board' | 'artwork'>('board');
   
   useEffect(() => {
     const handleLanguageChange = (e: CustomEvent<'es' | 'en'>) => {
@@ -95,21 +95,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                 {/* Artwork Panel */}
                 <div className="relative">
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-chess-surface border border-chess-border/50">
-                    {featured.artwork_url ? (
-                      <CombinationVisual
-                        combination={featured}
-                        imgClassName="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-chess-text-muted">
-                        <Palette className="h-16 w-16 text-chess-gold/50" />
-                        <p className="font-display text-chess-text-secondary">{locale === 'es' ? 'Ilustración de Pablo Iglesias' : 'Artwork by Pablo Iglesias'}</p>
-                        <p className="text-sm text-chess-text-muted">Próximamente</p>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-chess-bg/80 via-transparent to-transparent pointer-events-none" />
-                  </div>
+                  <DailyLesson locale={locale} />
 
                   {featured.artist_notes && (
                     <motion.div
@@ -130,57 +116,21 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
 
                 {/* Interactive Board Panel */}
                 <div className="relative w-full max-w-[520px] justify-self-center">
-                  <div className="mb-6 flex flex-wrap items-center gap-2" role="tablist">
-                    {[
-                      { id: 'board', label: locale === 'es' ? 'Tablero Interactivo' : 'Interactive Board', icon: ChessRook },
-                      { id: 'artwork', label: locale === 'es' ? 'Ilustración Completa' : 'Full Artwork', icon: Sparkles },
-                    ].map(tab => (
-                      <button
-                        key={tab.id}
-                        role="tab"
-                        aria-selected={activeTab === tab.id}
-                        aria-controls={`${tab.id}-panel`}
-                        id={`${tab.id}-tab`}
-                        onClick={() => setActiveTab(tab.id as 'board' | 'artwork')}
-                        className={cn(
-                          'flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-xl border-2 transition-all duration-200',
-                          activeTab === tab.id
-                            ? 'border-chess-gold bg-chess-gold/5 text-chess-gold'
-                            : 'border-chess-border/50 text-chess-text-secondary hover:text-chess-text-primary hover:border-chess-gold/30 hover:bg-chess-surface-elevated/30'
-                        )}
-                      >
-                        <tab.icon className="h-4 w-4" />
-                        {tab.label}
-                      </button>
-                    ))}
+                  <div className="mb-6 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-xl border-2 border-chess-gold bg-chess-gold/5 text-chess-gold">
+                      <ChessRook className="h-4 w-4" />
+                      {locale === 'es' ? 'Tablero Interactivo' : 'Interactive Board'}
+                    </span>
                   </div>
 
-                  <div role="tabpanel" className="chess-board-container">
-                    {activeTab === 'board' && (
-                      <PGNViewer
-                        pgn={featured.pgn}
-                        initialFen={featured.fen}
-                        showControls={true}
-                        showMoveList={true}
-                        autoPlaySpeed={1000}
-                      />
-                    )}
-                    
-                    {activeTab === 'artwork' && featured.artwork_url && (
-                      <div className="relative aspect-square">
-                        <img
-                          src={featured.artwork_url}
-                          alt={featured.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const img = e.currentTarget;
-                            if (!img.src.endsWith('/artworks/placeholder.svg')) {
-                              img.src = '/artworks/placeholder.svg';
-                            }
-                          }}
-                        />
-                      </div>
-                    )}
+                  <div className="chess-board-container">
+                    <PGNViewer
+                      pgn={featured.pgn}
+                      initialFen={featured.fen}
+                      showControls={true}
+                      showMoveList={true}
+                      autoPlaySpeed={1000}
+                    />
                   </div>
 
                   {/* Combination Info */}
