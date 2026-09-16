@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { Lightbulb } from 'lucide-react';
-import { ChessPiece } from './pieces';
+import { defaultPieces } from 'react-chessboard';
 
 interface LessonPiece {
   square: string;
@@ -158,7 +158,12 @@ export function DailyLesson({ locale = 'es' }: { locale?: 'es' | 'en' }) {
           )}
           {lesson.pieces.map((p, i) => {
             const [x, y] = sqXY(p.square);
-            return <ChessPiece key={`${p.square}-${i}`} piece={p.piece} x={x} y={y} size={64} />;
+            const ProPiece = defaultPieces[p.piece] || defaultPieces.wP;
+            return (
+              <g key={`${p.square}-${i}`} transform={`translate(${x + 2}, ${y + 2})`}>
+                <ProPiece svgStyle={{ width: 60, height: 60, display: 'block' }} />
+              </g>
+            );
           })}
           {lesson.circles.map((sq) => {
             const [x, y] = sqXY(sq);

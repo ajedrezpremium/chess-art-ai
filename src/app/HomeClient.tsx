@@ -80,7 +80,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                     <span className="font-display text-chess-gold">♟ {translations.gallery.title}</span>
                   </span>
                   <h2 className="font-display text-heading-lg text-chess-text-primary">
-                    {locale === 'es' ? 'Combinación destacada de la semana' : 'Featured combination of the week'}
+                    {locale === 'es' ? 'Tema Ajedrez' : 'Chess Theme'}
                   </h2>
                 </div>
                 <Link
@@ -115,7 +115,7 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                 </div>
 
                 {/* Interactive Board Panel */}
-                <div className="relative w-full max-w-[520px] justify-self-center">
+                <div className="relative w-full max-w-[480px] justify-self-center">
                   <div className="mb-6 flex flex-wrap items-center gap-2">
                     <span className="inline-flex items-center gap-2 px-5 py-3 text-sm font-medium rounded-xl border-2 border-chess-gold bg-chess-gold/5 text-chess-gold">
                       <ChessRook className="h-4 w-4" />
