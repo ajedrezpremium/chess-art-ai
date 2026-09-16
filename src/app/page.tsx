@@ -29,7 +29,7 @@ export default async function HomePage() {
 
   const list = combinations || DEMO_COMBINATIONS;
   const featured = list[0] || null;
-  const galleryPreview = list.slice(1, 5);
+  const galleryPreview = list.slice(0, 4);
   
   return <HomeClient featured={featured} galleryPreview={galleryPreview} />;
 }
