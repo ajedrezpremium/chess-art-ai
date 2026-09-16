@@ -93,8 +93,8 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
               </div>
 
               <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-                {/* Artwork Panel */}
-                <div className="relative">
+                {/* Lección diaria 4x4 */}
+                <div className="relative w-full max-w-[480px]">
                   <DailyLesson locale={locale} />
 
                   {featured.artist_notes && (

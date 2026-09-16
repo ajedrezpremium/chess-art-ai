@@ -32,7 +32,7 @@ interface PGNViewerProps {
   showControls?: boolean;
   showMoveList?: boolean;
   autoPlaySpeed?: number;
-  /** Ancho máximo del tablero (p. ej. '480px'). Por defecto 560px. */
+  /** Ancho máximo del tablero (p. ej. '480px'). Por defecto 480px. */
   boardMaxWidth?: string;
   onMoveChange?: (moveIndex: number, move: PGNMove | null) => void;
 }
@@ -45,7 +45,7 @@ export function PGNViewer({
   showControls = true,
   showMoveList = true,
   autoPlaySpeed = 1000,
-  boardMaxWidth = '560px',
+  boardMaxWidth = '480px',
   onMoveChange,
 }: PGNViewerProps) {
   const [parsedPGN, setParsedPGN] = useState<ParsedPGN | null>(null);
@@ -469,7 +469,7 @@ function generateFullPGN(parsed: ParsedPGN, upToIndex: number = parsed.moves.len
   return pgn;
 }
 
-export function FreePGNViewer({ boardMaxWidth = '560px' }: { boardMaxWidth?: string } = {}) {
+export function FreePGNViewer({ boardMaxWidth = '480px' }: { boardMaxWidth?: string } = {}) {
   const [pgnInput, setPgnInput] = useState('');
   const [parsedPGN, setParsedPGN] = useState<ParsedPGN | null>(null);
   const [error, setError] = useState<string | null>(null);
