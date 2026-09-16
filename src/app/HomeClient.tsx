@@ -11,7 +11,7 @@ import { AIChatWidget } from '@/components/agent/ChatWidget';
 import { PGNViewer } from '@/components/chess/PGNViewer';
 import { getTranslations } from '@/lib/i18n';
 import type { Combination } from '@/types/combination';
-import { ChessRook, ArrowRight, Sparkles, ExternalLink, Palette } from 'lucide-react';
+import { ChessRook, ArrowRight, Sparkles, ExternalLink, Palette, AtSign, Camera } from 'lucide-react';
 import { DIFFICULTY_COLORS } from '@/lib/chess/pgn-utils';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -410,14 +410,27 @@ export function HomeClient({ featured, galleryPreview }: HomeClientProps) {
                       </span>
                       {locale === 'es' ? 'Ver portafolio completo' : 'View full portfolio'}
                     </a>
-                    <a 
-                      href="#" 
+                    <a
+                      href="https://www.tiktok.com/@pablo15121987?_r=1&_t=ZG-99mfsRIWQOf"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-chess-text-secondary hover:text-chess-gold transition-colors group"
                     >
                       <span className="w-8 h-8 rounded-lg bg-chess-surface-elevated/50 flex items-center justify-center group-hover:bg-chess-gold/20 transition-colors">
-                        <Sparkles className="h-4 w-4" />
+                        <AtSign className="h-4 w-4" />
                       </span>
-                      {locale === 'es' ? 'Seguir en redes sociales' : 'Follow on social media'}
+                      TikTok · @pablo15121987
+                    </a>
+                    <a
+                      href="https://www.instagram.com/pablito12121987/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 text-sm text-chess-text-secondary hover:text-chess-gold transition-colors group"
+                    >
+                      <span className="w-8 h-8 rounded-lg bg-chess-surface-elevated/50 flex items-center justify-center group-hover:bg-chess-gold/20 transition-colors">
+                        <Camera className="h-4 w-4" />
+                      </span>
+                      Instagram · @pablito12121987
                     </a>
                   </div>
                 </div>

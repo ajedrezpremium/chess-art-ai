@@ -8,7 +8,7 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
 import {
   Palette, BadgeCheck, Clock, UploadCloud, ShieldCheck, User, Mail,
-  Briefcase, ArrowRight, CheckCircle2, AlertCircle, Loader2, ExternalLink,
+  AtSign, Camera, ArrowRight, CheckCircle2, AlertCircle, Loader2, ExternalLink,
 } from 'lucide-react';
 
 const CATEGORIES = ['Dibujo', 'Pintura', 'Escultura', 'Fotografía', 'Digital', 'Otra'];
@@ -167,12 +167,20 @@ export function ArtistasClient() {
               </div>
               <div className="flex flex-wrap gap-3 mt-6">
                 <a
-                  href="https://www.linkedin.com/in/pabloiglesias1991/"
+                  href="https://www.tiktok.com/@pablo15121987?_r=1&_t=ZG-99mfsRIWQOf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-secondary !py-2.5 !px-4 text-sm"
                 >
-                  <Briefcase className="h-4 w-4" /> LinkedIn <ExternalLink className="h-3.5 w-3.5" />
+                  <AtSign className="h-4 w-4" /> TikTok <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+                <a
+                  href="https://www.instagram.com/pablito12121987/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary !py-2.5 !px-4 text-sm"
+                >
+                  <Camera className="h-4 w-4" /> Instagram <ExternalLink className="h-3.5 w-3.5" />
                 </a>
                 <Link href="/combinaciones" className="btn-primary !py-2.5 !px-4 text-sm">
                   {es ? 'Ver su serie' : 'View his series'} <ArrowRight className="h-4 w-4" />
