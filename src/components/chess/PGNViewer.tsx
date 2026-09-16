@@ -32,6 +32,8 @@ interface PGNViewerProps {
   showControls?: boolean;
   showMoveList?: boolean;
   autoPlaySpeed?: number;
+  /** Ancho máximo del tablero (p. ej. '480px'). Por defecto 560px. */
+  boardMaxWidth?: string;
   onMoveChange?: (moveIndex: number, move: PGNMove | null) => void;
 }
 
@@ -43,6 +45,7 @@ export function PGNViewer({
   showControls = true,
   showMoveList = true,
   autoPlaySpeed = 1000,
+  boardMaxWidth = '560px',
   onMoveChange,
 }: PGNViewerProps) {
   const [parsedPGN, setParsedPGN] = useState<ParsedPGN | null>(null);
@@ -292,7 +295,7 @@ export function PGNViewer({
           />
         </div>
 
-        <div className="w-full max-w-[560px] shrink-0">
+        <div className="w-full shrink-0" style={{ maxWidth: boardMaxWidth }}>
           <ChessBoardSvg
             fen={chessRef.current.fen()}
             orientation={orientation}
@@ -466,7 +469,7 @@ function generateFullPGN(parsed: ParsedPGN, upToIndex: number = parsed.moves.len
   return pgn;
 }
 
-export function FreePGNViewer() {
+export function FreePGNViewer({ boardMaxWidth = '560px' }: { boardMaxWidth?: string } = {}) {
   const [pgnInput, setPgnInput] = useState('');
   const [parsedPGN, setParsedPGN] = useState<ParsedPGN | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -513,10 +516,11 @@ export function FreePGNViewer() {
       </div>
 
       {parsedPGN && (
-        <PGNViewer 
+        <PGNViewer
           pgn={generateFullPGN(parsedPGN, parsedPGN.moves.length - 1)}
           showControls={true}
           showMoveList={true}
+          boardMaxWidth={boardMaxWidth}
         />
       )}
     </div>

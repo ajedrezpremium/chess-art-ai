@@ -44,7 +44,7 @@ export default function VisorPage() {
             </div>
             
             <div className="glass-strong p-6 lg:p-8">
-              <FreePGNViewer />
+              <FreePGNViewer boardMaxWidth="480px" />
             </div>
           </motion.div>
         </div>

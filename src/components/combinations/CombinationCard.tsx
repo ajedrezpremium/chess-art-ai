@@ -8,6 +8,7 @@ import { ChessRook, ExternalLink, Eye, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type { Combination } from '@/types/combination';
 import { DIFFICULTY_COLORS, parsePGN, normalizeFen } from '@/lib/chess/pgn-utils';
+import { COMBINATION_FEN_OVERRIDES } from '@/lib/data/combination-fen-overrides';
 import { ChessBoardSvg } from '@/components/chess/ChessBoard';
 
 /**
@@ -27,9 +28,11 @@ export function CombinationVisual({
   const url = combination.artwork_url;
   // Solo cuenta como ilustración una URL real: ni vacía, ni placeholder local.
   const hasRealArt = !!url && !url.includes('placeholder') && !FAILED_ART.has(url);
-  // Diagrama: el `fen` curado de la base es la posición clave; solo si
-  // falta o es la inicial genérica se deriva del inicio del fragmento PGN.
+  // Diagrama: 1º override exacto, 2º `fen` curado de la base, 3º inicio
+  // del fragmento PGN como respaldo.
   const diagramFen = useMemo(() => {
+    const override = COMBINATION_FEN_OVERRIDES[combination.slug];
+    if (override) return normalizeFen(override);
     const base = normalizeFen(combination.fen);
     if (base && base !== normalizeFen('')) return base;
     try {
