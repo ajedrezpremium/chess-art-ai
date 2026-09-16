@@ -160,9 +160,9 @@ export function DailyLesson({ locale = 'es' }: { locale?: 'es' | 'en' }) {
             const [x, y] = sqXY(p.square);
             const ProPiece = defaultPieces[p.piece] || defaultPieces.wP;
             return (
-              <g key={`${p.square}-${i}`} transform={`translate(${x + 2}, ${y + 2})`}>
-                <ProPiece svgStyle={{ width: 60, height: 60, display: 'block' }} />
-              </g>
+              <svg key={`${p.square}-${i}`} x={x} y={y} width={64} height={64}>
+                <ProPiece />
+              </svg>
             );
           })}
           {lesson.circles.map((sq) => {
