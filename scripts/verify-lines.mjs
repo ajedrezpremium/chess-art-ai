@@ -24,6 +24,21 @@ const tests = [
     line: [['c4', 'f7'], ['e8', 'f7'], ['f3', 'e5'], ['f7', 'e8'], ['d1', 'g4'], ['g8', 'f6'], ['g4', 'e6'], ['d8', 'e7'], ['e6', 'c8'], ['e7', 'd8'], ['c8', 'd8'], ['e8', 'd8'], ['e5', 'f7']],
   },
   {
+    name: 'Domenico 1594 (principal)',
+    fen: 'r1bqnrk1/ppp1bppp/2n1p3/3pP3/3P3P/2PB1N2/PP3PP1/RNBQK2R w KQ - 0 1',
+    line: [['d3', 'h7'], ['g8', 'h7'], ['f3', 'g5'], ['e7', 'g5'], ['h4', 'g5'], ['h7', 'g8'], ['d1', 'h5'], ['f7', 'f5'], ['g5', 'g6']],
+  },
+  {
+    name: 'Domenico 1594 (sub 3...Rg6)',
+    fen: 'r1bqnrk1/ppp1bppp/2n1p3/3pP3/3P3P/2PB1N2/PP3PP1/RNBQK2R w KQ - 0 1',
+    line: [['d3', 'h7'], ['g8', 'h7'], ['f3', 'g5'], ['e7', 'g5'], ['h4', 'g5'], ['h7', 'g6'], ['d1', 'h5'], ['g6', 'f5'], ['h5', 'h3'], ['f5', 'g6'], ['h3', 'h7']],
+  },
+  {
+    name: 'Domenico 1594 (sub 5...Re4)',
+    fen: 'r1bqnrk1/ppp1bppp/2n1p3/3pP3/3P3P/2PB1N2/PP3PP1/RNBQK2R w KQ - 0 1',
+    line: [['d3', 'h7'], ['g8', 'h7'], ['f3', 'g5'], ['e7', 'g5'], ['h4', 'g5'], ['h7', 'g6'], ['d1', 'h5'], ['g6', 'f5'], ['h5', 'h3'], ['f5', 'e4'], ['h3', 'f3']],
+  },
+  {
     name: 'Damiano 1512',
     fen: '4qrk1/6p1/5pP1/3K4/8/8/4P3/3Q1R1R w - - 0 1',
     line: [['h1', 'h8'], ['g8', 'h8'], ['f1', 'h1'], ['h8', 'g8'], ['h1', 'h8'], ['g8', 'h8'], ['d1', 'h1'], ['h8', 'g8'], ['h1', 'h7']],
