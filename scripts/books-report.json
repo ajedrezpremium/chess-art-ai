@@ -1,0 +1,233 @@
+[
+  {
+    "title": "The Chess-Player's Handbook",
+    "author": "Howard Staunton, R. F. Green",
+    "year": "1847",
+    "lang": "EN",
+    "note": "El manual victoriano que enseñó aperturas a generaciones.",
+    "cover": "https://covers.openlibrary.org/b/id/2494003-L.jpg",
+    "olKey": "/works/OL29252506W",
+    "reason": "ok"
+  },
+  {
+    "title": "Morphy's Games of Chess, Being the Best Games Played by the Distinguished Champion in Europe and America",
+    "author": "Paul Charles Morphy, J 1810-1876 Löwenthal",
+    "year": "2018",
+    "lang": "EN",
+    "note": "Las partidas del genio de Nueva Orleans, anotadas en su época.",
+    "cover": "https://covers.openlibrary.org/b/id/11114605-L.jpg",
+    "olKey": "/works/OL24495329W",
+    "reason": "ok"
+  },
+  {
+    "title": "The Modern Chess Instructor (Classic Chess)",
+    "author": "Wilhelm Steinitz",
+    "year": "1984",
+    "lang": "EN",
+    "note": "El primer campeón mundial explica la escuela posicional.",
+    "cover": "https://covers.openlibrary.org/b/id/2198583-L.jpg",
+    "olKey": "/works/OL9058206W",
+    "reason": "ok"
+  },
+  {
+    "title": "Chess fundamentals",
+    "author": "José Raúl Capablanca",
+    "year": "1921",
+    "lang": "EN",
+    "note": "El tratado claro y directo del tercer campeón.",
+    "cover": "https://covers.openlibrary.org/b/id/7313798-L.jpg",
+    "olKey": "/works/OL4467962W",
+    "reason": "ok"
+  },
+  {
+    "title": "My chess career",
+    "author": "José Raúl Capablanca",
+    "year": "1920",
+    "lang": "EN",
+    "note": "Sesenta partidas comentadas por el propio Capablanca.",
+    "cover": "https://covers.openlibrary.org/b/id/7313797-L.jpg",
+    "olKey": "/works/OL4467964W",
+    "reason": "ok"
+  },
+  {
+    "title": "Common sense in chess",
+    "author": "Emanuel Lasker",
+    "year": "1896",
+    "lang": "EN",
+    "note": "Doce conferencias del campeón filósofo.",
+    "cover": "https://covers.openlibrary.org/b/id/5700693-L.jpg",
+    "olKey": "/works/OL3782506W",
+    "reason": "ok"
+  },
+  {
+    "title": "Lasker's manual of chess",
+    "author": "Emanuel Lasker",
+    "year": "1927",
+    "lang": "EN",
+    "note": "El manual enciclopédico de Lasker.",
+    "cover": "https://covers.openlibrary.org/b/id/308572-L.jpg",
+    "olKey": "/works/OL3782505W",
+    "reason": "ok"
+  },
+  {
+    "title": "The art of chess",
+    "author": "Mason, James",
+    "year": "1913",
+    "lang": "EN",
+    "note": "Clásico inglés de medio juego y finales.",
+    "cover": "https://covers.openlibrary.org/b/id/8422877-L.jpg",
+    "olKey": "/works/OL164185W",
+    "reason": "ok"
+  },
+  {
+    "title": "Chess openings ancient and modern",
+    "author": "Edward Freeborough",
+    "year": "1893",
+    "lang": "EN",
+    "note": "Teoría de aperturas del XIX con partidas modelo.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Handbuch des Schachspiels",
+    "author": "Paul Rudolph von Bilguer",
+    "year": "1843",
+    "lang": "DE",
+    "note": "La biblia alemana del ajedrez durante un siglo.",
+    "cover": "https://covers.openlibrary.org/b/id/5816080-L.jpg",
+    "olKey": "/works/OL7495391W",
+    "reason": "ok"
+  },
+  {
+    "title": "Die moderne Schachpartie",
+    "author": "Siegbert Tarrasch",
+    "year": "1924",
+    "lang": "DE",
+    "note": "Tarrasch y los dogmas clásicos del juego posicional.",
+    "cover": "https://covers.openlibrary.org/b/id/8386966-L.jpg",
+    "olKey": "/works/OL19072581W",
+    "reason": "ok"
+  },
+  {
+    "title": "Lehrbuch des Schachspiels.",
+    "author": "Jean Dufresne, Jacques Mieses, Rudolf Teschner",
+    "year": "1996",
+    "lang": "DE",
+    "note": "El manual popular alemán del XIX.",
+    "cover": "https://covers.openlibrary.org/b/id/3173072-L.jpg",
+    "olKey": "/works/OL12673704M",
+    "reason": "ok"
+  },
+  {
+    "title": "Analyse du jeu des échecs",
+    "author": "F. D. Philidor",
+    "year": "1777",
+    "lang": "FR",
+    "note": "Los peones son el alma del ajedrez. Fundacional.",
+    "cover": "https://covers.openlibrary.org/b/id/9804457-L.jpg",
+    "olKey": "/works/OL6023860W",
+    "reason": "ok"
+  },
+  {
+    "title": "Nouveau traité du jeu des échecs",
+    "author": "L. C. de La Bourdonnais",
+    "year": "1833",
+    "lang": "FR",
+    "note": "El campeón francés de la Régence en su tratado.",
+    "cover": "https://covers.openlibrary.org/b/id/9464825-L.jpg",
+    "olKey": "/works/OL17001734W",
+    "reason": "ok"
+  },
+  {
+    "title": "Libro de la invencion liberal",
+    "author": "Ruy Lopez",
+    "year": "1561",
+    "lang": "ES",
+    "note": "El extremeño que dio nombre a la apertura española.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Repeticion de amores",
+    "author": "Luis Ramirez de Lucena",
+    "year": "1497",
+    "lang": "ES",
+    "note": "Primer libro impreso con las reglas modernas.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Arte de axedres",
+    "author": "Francesc Vicent",
+    "year": "1495",
+    "lang": "ES",
+    "note": "Incunable valenciano, entre los primeros del mundo.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Il giuoco degli scacchi",
+    "author": "Gioachino Greco",
+    "year": "1619",
+    "lang": "IT",
+    "note": "El Calabrés: celadas y miniaturas eternas.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Trattato dellinventione",
+    "author": "Pietro Carrera",
+    "year": "1617",
+    "lang": "IT",
+    "note": "El siciliano y su defensa con dama temprana.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Il Puttino",
+    "author": "Alessandro Salvio",
+    "year": "1604",
+    "lang": "IT",
+    "note": "El napolitano: teoría y partidas del XVII.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Questo libro e da imparare giocare a scachi",
+    "author": "Damiano",
+    "year": "1512",
+    "lang": "IT",
+    "note": "Manual renacentista de bolsillo.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "Schachnovelle",
+    "author": "Stefan Zweig",
+    "year": "1942",
+    "lang": "DE",
+    "note": "La novela definitiva sobre la obsesión ajedrecística.",
+    "cover": "https://covers.openlibrary.org/b/id/8384249-L.jpg",
+    "olKey": "/works/OL19070206W",
+    "reason": "ok"
+  },
+  {
+    "title": "A travers les echecs",
+    "author": "Alphonse Delannoy",
+    "year": "1890",
+    "lang": "FR",
+    "note": "Miscelánea francesa del café de la Régence.",
+    "cover": null,
+    "reason": "sin-portada"
+  },
+  {
+    "title": "The principles of chess in theory and practice",
+    "author": "Mason, James",
+    "year": "1894",
+    "lang": "EN",
+    "note": "Fundamentos para el jugador de club.",
+    "cover": "https://covers.openlibrary.org/b/id/5892115-L.jpg",
+    "olKey": "/works/OL164186W",
+    "reason": "ok"
+  }
+]
