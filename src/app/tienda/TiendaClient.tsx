@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/layout/Header';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { AIChatWidget } from '@/components/agent/ChatWidget';
-import { ShoppingBag, BookOpen, Crown, Palette, Clapperboard, ExternalLink, Info } from 'lucide-react';
+import { ShoppingBag, BookOpen, Crown, Palette, Clapperboard, ExternalLink, Info, Search, Store, X, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface ShopLink {
   name: string;
@@ -263,6 +263,47 @@ export function TiendaClient() {
     return () => window.removeEventListener('toggle-language', h as EventListener);
   }, []);
   const es = locale === 'es';
+  const [query, setQuery] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ shop: '', email: '', web: '', country: '', kind: 'Librería', message: '' });
+  const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const q = query.trim().toLowerCase();
+  const filtered = CATEGORIES.map((cat) => ({
+    ...cat,
+    links: cat.links.filter(
+      (l) =>
+        !q ||
+        l.name.toLowerCase().includes(q) ||
+        l.descEs.toLowerCase().includes(q) ||
+        l.descEn.toLowerCase().includes(q) ||
+        (l.country || '').toLowerCase().includes(q)
+    ),
+  })).filter((cat) => cat.links.length > 0);
+
+  const set = (k: keyof typeof form) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('sending');
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/shops/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, locale }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Error');
+      setStatus('ok');
+    } catch (err) {
+      setStatus('error');
+      setErrorMsg(err instanceof Error ? err.message : 'Error');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-chess-bg">
@@ -281,10 +322,33 @@ export function TiendaClient() {
               ? 'Selección de tiendas y editoriales oficiales para informarte y comprar obras relacionadas con el ajedrez: libros, cuadros, dibujos y películas.'
               : 'A selection of official shops and publishers to explore and buy chess-related works: books, paintings, drawings and films.'}
           </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-chess-text-muted" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={es ? 'Buscar tiendas, libros, países…' : 'Search shops, books, countries…'}
+                aria-label={es ? 'Buscar en la tienda' : 'Search the shop'}
+                className="w-full pl-12 pr-4 py-3 bg-chess-surface/60 border border-chess-border/50 rounded-xl text-chess-text-primary placeholder:text-chess-text-muted focus:outline-none focus:border-chess-gold/60 focus:ring-2 focus:ring-chess-gold/20"
+              />
+            </div>
+            <button onClick={() => { setShowForm(true); setStatus('idle'); }} className="btn-primary whitespace-nowrap">
+              <Store className="h-5 w-5" />
+              {es ? 'Alta como punto de venta' : 'Register as a seller'}
+            </button>
+          </div>
         </motion.div>
 
+        {q && filtered.length === 0 && (
+          <p className="text-chess-text-secondary mb-8">
+            {es ? 'Sin resultados para tu búsqueda.' : 'No results for your search.'}
+          </p>
+        )}
+
         <div className="space-y-12">
-          {CATEGORIES.map((cat, ci) => (
+          {filtered.map((cat, ci) => (
             <motion.section
               key={cat.id}
               initial={{ opacity: 0, y: 24 }}
@@ -338,6 +402,104 @@ export function TiendaClient() {
             ? 'Todos los enlaces llevan a webs oficiales externas. ChessArt AI no vende directamente ni recibe comisión: es una guía editorial independiente.'
             : 'All links go to external official websites. ChessArt AI does not sell directly nor earns commission: it is an independent editorial guide.'}
         </p>
+
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setShowForm(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 24, scale: 0.98 }}
+                transition={{ duration: 0.3 }}
+                className="card-elevated w-full max-w-lg p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-label={es ? 'Alta como punto de venta' : 'Register as a seller'}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h2 className="font-display text-xl md:text-2xl font-bold text-chess-text-primary">
+                    {es ? 'Alta como punto de venta' : 'Register as a seller'}
+                  </h2>
+                  <button
+                    onClick={() => setShowForm(false)}
+                    className="rounded-lg p-1.5 text-chess-text-muted hover:text-chess-text-primary hover:bg-chess-surface-elevated/60"
+                    aria-label={es ? 'Cerrar' : 'Close'}
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <p className="text-sm text-chess-text-secondary mb-6">
+                  {es
+                    ? '¿Tienes una tienda o editorial? Solicita aparecer en la guía. Revisamos cada alta en 24–48h.'
+                    : 'Own a shop or publishing house? Request to join the guide. We review each application within 24–48h.'}
+                </p>
+                {status === 'ok' ? (
+                  <div className="flex items-start gap-3 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-emerald-300">{es ? '¡Solicitud recibida!' : 'Application received!'}</p>
+                      <p className="text-sm text-chess-text-secondary mt-1">
+                        {es
+                          ? 'La revisaremos en 24–48h y te avisaremos por email.'
+                          : 'We’ll review it within 24–48h and notify you by email.'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={submit} className="grid gap-4">
+                    <label className="block">
+                      <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Nombre de la tienda *' : 'Shop name *'}</span>
+                      <input required value={form.shop} onChange={set('shop')} className="input-base" placeholder="Ajedrez Premium" />
+                    </label>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <label className="block">
+                        <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">Email *</span>
+                        <input required type="email" value={form.email} onChange={set('email')} className="input-base" placeholder="tienda@email.com" />
+                      </label>
+                      <label className="block">
+                        <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'País *' : 'Country *'}</span>
+                        <input required value={form.country} onChange={set('country')} className="input-base" placeholder="España" />
+                      </label>
+                    </div>
+                    <label className="block">
+                      <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">Web *</span>
+                      <input required type="url" value={form.web} onChange={set('web')} className="input-base" placeholder="https://…" />
+                    </label>
+                    <label className="block">
+                      <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Tipo *' : 'Type *'}</span>
+                      <select value={form.kind} onChange={set('kind')} className="input-base">
+                        {(es ? ['Librería', 'Tableros y piezas', 'Arte', 'Cine', 'Plataforma online', 'Otro'] : ['Bookshop', 'Boards & pieces', 'Art', 'Film', 'Online platform', 'Other']).map((k) => (
+                          <option key={k} value={k} className="bg-chess-surface">{k}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">{es ? 'Mensaje (opcional)' : 'Message (optional)'}</span>
+                      <textarea value={form.message} onChange={set('message')} className="input-base textarea-base" rows={3} />
+                    </label>
+                    {status === 'error' && (
+                      <p className="flex items-center gap-2 text-sm text-red-400">
+                        <AlertCircle className="h-4 w-4" />
+                        {es ? 'No se pudo enviar: ' : 'Could not submit: '}{errorMsg}
+                      </p>
+                    )}
+                    <button type="submit" disabled={status === 'sending'} className="btn-primary disabled:opacity-50">
+                      {status === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Store className="h-5 w-5" />}
+                      {es ? 'Enviar solicitud' : 'Send application'}
+                    </button>
+                  </form>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
       <SiteFooter locale={locale} />
       <AIChatWidget locale={locale} />
