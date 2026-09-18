@@ -165,7 +165,7 @@ export function ChessBoard({
   return (
     <div
       className={cn(
-        'relative w-full overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900 shadow-2xl select-none',
+        'chessboard-a11y-guard relative w-full overflow-hidden rounded-xl border border-slate-700/80 bg-slate-900 shadow-2xl select-none',
         className
       )}
       style={{ aspectRatio: '1 / 1', maxWidth: '640px', ...style }}
