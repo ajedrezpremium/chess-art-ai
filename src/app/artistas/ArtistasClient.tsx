@@ -22,12 +22,14 @@ export function ArtistasClient() {
   }, []);
 
   const [tab, setTab] = useState<'artists' | 'collaborators'>('artists');
-  const [form, setForm] = useState({ name: '', email: '', title: '', category: 'Dibujo', description: '', imageUrl: '' });
+  const [form, setForm] = useState({ name: '', email: '', title: '', category: 'Dibujo', description: '', imageUrl: '', origin: 'own-work', license: 'CC BY', rights: false });
   const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
+  const [publishState, setPublishState] = useState<'auto' | 'pending' | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const [cform, setCform] = useState({ alias: '', email: '', kind: 'Obra de arte', title: '', description: '', link: '' });
+  const [cform, setCform] = useState({ alias: '', email: '', kind: 'Obra de arte', title: '', description: '', link: '', rights: false });
   const [cstatus, setCstatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
+  const [cpublishState, setCpublishState] = useState<'auto' | 'pending' | null>(null);
   const [cerror, setCerror] = useState('');
 
   const es = locale === 'es';
@@ -40,10 +42,11 @@ export function ArtistasClient() {
       const res = await fetch('/api/artists/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, locale }),
+        body: JSON.stringify({ ...form, rightsAccepted: form.rights, locale }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'Error');
+      setPublishState(data.status === 'approved_auto' ? 'auto' : 'pending');
       setStatus('ok');
     } catch (err) {
       setStatus('error');
@@ -67,10 +70,11 @@ export function ArtistasClient() {
       const res = await fetch('/api/collaborators/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...cform, locale }),
+        body: JSON.stringify({ ...cform, rightsAccepted: cform.rights, locale }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'Error');
+      setCpublishState(data.status === 'approved_auto' ? 'auto' : 'pending');
       setCstatus('ok');
     } catch (err) {
       setCstatus('error');
@@ -93,8 +97,8 @@ export function ArtistasClient() {
           </h1>
           <p className="mt-4 max-w-3xl text-lg text-chess-text-secondary">
             {es
-              ? 'Cada artista tiene su propio perfil y puede subir sus obras directamente. Todo el material pasa una revisión editorial de calidad y legalidad en 24–48h antes de publicarse.'
-              : 'Each artist has their own profile and can upload works directly. All material passes an editorial quality and legality review within 24–48h before publication.'}
+              ? 'Cada artista tiene su propio perfil y puede subir sus obras directamente. Si superan los controles automáticos de originalidad y derechos, se publican al instante; el resto pasa a revisión editorial en 24–48h.'
+              : 'Each artist has their own profile and can upload works directly. Pieces passing the automatic originality and rights checks are published instantly; the rest go to editorial review within 24–48h.'}
           </p>
         </motion.div>
 
@@ -201,15 +205,15 @@ export function ArtistasClient() {
                 icon: UploadCloud,
                 t: es ? '1. Sube tu obra' : '1. Upload your work',
                 d: es
-                  ? 'Rellena el formulario con tu perfil y tu obra (título, categoría, descripción e imagen). Recibirás confirmación inmediata.'
-                  : 'Fill in the form with your profile and work (title, category, description and image). You’ll get instant confirmation.',
+                  ? 'Rellena el formulario con tu perfil y tu obra (título, categoría, descripción e imagen) y acepta la declaración de autoría y derechos.'
+                  : 'Fill in the form with your profile and work (title, category, description and image) and accept the authorship and rights declaration.',
               },
               {
                 icon: ShieldCheck,
-                t: es ? '2. Revisión 24–48h' : '2. Review within 24–48h',
+                t: es ? '2. Aprobación automática' : '2. Instant approval',
                 d: es
-                  ? 'Nuestro equipo revisa calidad artística, originalidad, derechos de imagen y legalidad antes de aprobar. Te avisamos por email.'
-                  : 'Our team reviews artistic quality, originality, image rights and legality before approval. We’ll notify you by email.',
+                  ? 'Controles inmediatos de originalidad, derechos, duplicados e imagen accesible. Si los superas, tu obra se publica al instante con la insignia «Auto · en verificación»; si no, pasa a revisión humana en 24–48h.'
+                  : 'Instant checks for originality, rights, duplicates and reachable image. If you pass, your work is published immediately with the “Auto · under verification” badge; otherwise it goes to human review within 24–48h.',
               },
               {
                 icon: User,
@@ -237,8 +241,8 @@ export function ArtistasClient() {
           <p className="mt-6 flex items-start gap-2 text-sm text-chess-text-muted max-w-3xl">
             <Clock className="h-4 w-4 mt-0.5 flex-shrink-0 text-chess-gold" />
             {es
-              ? 'Compromiso de revisión: 24–48h laborables. Solo se publican obras originales o con derechos acreditados; el contenido ilegal, plagiado o que vulnere derechos de terceros será rechazado.'
-              : 'Review commitment: 24–48 business hours. Only original or rights-cleared works are published; illegal, plagiarized or rights-infringing content will be rejected.'}
+              ? 'Publicación instantánea si superas los controles automáticos. Solo se publican obras originales o con derechos acreditados; el contenido ilegal, plagiado o infractor será retirado ante cualquier aviso (chessaiagency@gmail.com).'
+              : 'Instant publication if you pass the automatic checks. Only original or rights-cleared works are published; illegal, plagiarized or infringing content will be removed upon any notice (chessaiagency@gmail.com).'}
           </p>
         </section>
 
@@ -249,8 +253,8 @@ export function ArtistasClient() {
           </h2>
           <p className="text-chess-text-secondary mb-8 max-w-2xl">
             {es
-              ? 'Completa todos los campos. Al enviar aceptas que tu obra sea revisada y, si se aprueba, publicada con tu nombre.'
-              : 'Fill in all fields. By submitting you agree that your work will be reviewed and, if approved, published under your name.'}
+              ? 'Completa todos los campos y acepta la declaración de derechos. Si tu obra supera los controles automáticos, se publica al instante.'
+              : 'Fill in all fields and accept the rights declaration. If your work passes the automatic checks, it is published instantly.'}
           </p>
 
           {status === 'ok' ? (
@@ -258,12 +262,18 @@ export function ArtistasClient() {
               <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-emerald-300">
-                  {es ? '¡Obra recibida!' : 'Work received!'}
+                  {publishState === 'auto'
+                    ? es ? '¡Publicada al instante!' : 'Published instantly!'
+                    : es ? '¡Obra recibida!' : 'Work received!'}
                 </p>
                 <p className="text-sm text-chess-text-secondary mt-1">
-                  {es
-                    ? 'La revisaremos en un plazo de 24–48h y te avisaremos por email. Gracias por compartir tu arte.'
-                    : 'We’ll review it within 24–48h and notify you by email. Thank you for sharing your art.'}
+                  {publishState === 'auto'
+                    ? es
+                      ? 'Tu obra ya es visible con la insignia «Auto · en verificación». Ante cualquier aviso de derechos será revisada de inmediato.'
+                      : 'Your work is already visible with the “Auto · under verification” badge. It will be reviewed immediately upon any rights notice.'
+                    : es
+                      ? 'Tu obra necesita revisión humana (24–48h) y te avisaremos por email. Gracias por compartir tu arte.'
+                      : 'Your work needs human review (24–48h) and we’ll notify you by email. Thank you for sharing your art.'}
                 </p>
               </div>
             </div>
@@ -327,10 +337,41 @@ export function ArtistasClient() {
                   </a>
                 </p>
               )}
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">
+                  {es ? 'Origen de la obra *' : 'Work origin *'}
+                </span>
+                <select value={form.origin} onChange={set('origin')} className="input-base">
+                  <option value="own-work" className="bg-chess-surface">{es ? 'Obra propia (soy el autor)' : 'Own work (I am the author)'}</option>
+                  <option value="licensed" className="bg-chess-surface">{es ? 'Obra de terceros con derechos acreditados' : 'Third-party work with cleared rights'}</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-chess-text-secondary mb-1.5">
+                  {es ? 'Licencia de exhibición *' : 'Display license *'}
+                </span>
+                <select value={form.license} onChange={set('license')} className="input-base">
+                  {['CC0', 'CC BY', 'CC BY-SA'].map((l) => <option key={l} value={l} className="bg-chess-surface">{l}</option>)}
+                </select>
+              </label>
+              <label className="md:col-span-2 flex items-start gap-3 p-4 rounded-xl bg-chess-surface-elevated/40 border border-chess-border/50 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  checked={form.rights}
+                  onChange={(e) => setForm((f) => ({ ...f, rights: e.target.checked }))}
+                  className="mt-1 h-4 w-4 accent-[#C9A227]"
+                />
+                <span className="text-sm text-chess-text-secondary leading-relaxed">
+                  {es
+                    ? 'Declaro que soy el autor de la obra o dispongo de los derechos para publicarla, y concedo a Chess Art & AI Academy licencia para exhibirla con mi crédito bajo la licencia elegida. Acepto su retirada inmediata ante un aviso fundado de terceros.'
+                    : 'I declare that I am the author of the work or hold the rights to publish it, and I grant Chess Art & AI Academy a license to display it with my credit under the chosen license. I accept its immediate removal upon a substantiated third-party notice.'}
+                </span>
+              </label>
               <div className="md:col-span-2 flex items-center gap-3">
                 <button type="submit" disabled={status === 'sending'} className="btn-primary disabled:opacity-50">
                   {status === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}
-                  {es ? 'Enviar para revisión' : 'Submit for review'}
+                  {es ? 'Publicar obra' : 'Publish work'}
                 </button>
                 <span className="inline-flex items-center gap-1.5 text-xs text-chess-text-muted">
                   <Mail className="h-3.5 w-3.5" /> chessaiagency@gmail.com
@@ -352,19 +393,27 @@ export function ArtistasClient() {
           </h2>
           <p className="text-chess-text-secondary mb-8 max-w-3xl">
             {es
-              ? '¿Tienes una obra, un extracto, una curiosidad o un dato de interés sobre ajedrez y arte? Envíalo de forma anónima o con tu alias: lo valoramos y, si enriquece la web, lo publicamos con tu crédito (o sin él, como prefieras). Revisión en 24–48h.'
-              : 'Have a work, excerpt, curiosity or interesting fact about chess and art? Send it anonymously or with your alias: we review it and, if it enriches the site, we publish it with your credit (or without, as you prefer). Review within 24–48h.'}
+              ? '¿Tienes una obra, un extracto, una curiosidad o un dato de interés sobre ajedrez y arte? Envíalo de forma anónima o con tu alias: si supera los controles automáticos se publica al instante (si no, revisión en 24–48h) con tu crédito o sin él, como prefieras.'
+              : 'Have a work, excerpt, curiosity or interesting fact about chess and art? Send it anonymously or with your alias: if it passes the automatic checks it is published instantly (otherwise review within 24–48h) with your credit or without, as you prefer.'}
           </p>
 
           {cstatus === 'ok' ? (
             <div className="flex items-start gap-3 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
               <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-emerald-300">{es ? '¡Aporte recibido!' : 'Contribution received!'}</p>
+                <p className="font-semibold text-emerald-300">
+                  {cpublishState === 'auto'
+                    ? es ? '¡Publicado al instante!' : 'Published instantly!'
+                    : es ? '¡Aporte recibido!' : 'Contribution received!'}
+                </p>
                 <p className="text-sm text-chess-text-secondary mt-1">
-                  {es
-                    ? 'Lo valoraremos en 24–48h. Si se publica, respetaremos tu decisión de crédito o anonimato. Gracias.'
-                    : 'We’ll review it within 24–48h. If published, we’ll respect your credit or anonymity choice. Thank you.'}
+                  {cpublishState === 'auto'
+                    ? es
+                      ? 'Tu aporte ya es visible con la insignia «Auto · en verificación».'
+                      : 'Your contribution is already visible with the “Auto · under verification” badge.'
+                    : es
+                      ? 'Lo valoraremos en 24–48h. Si se publica, respetaremos tu decisión de crédito o anonimato. Gracias.'
+                      : 'We’ll review it within 24–48h. If published, we’ll respect your credit or anonymity choice. Thank you.'}
                 </p>
               </div>
             </div>
@@ -414,6 +463,20 @@ export function ArtistasClient() {
                   </a>
                 </p>
               )}
+              <label className="md:col-span-2 flex items-start gap-3 p-4 rounded-xl bg-chess-surface-elevated/40 border border-chess-border/50 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  checked={cform.rights}
+                  onChange={(e) => setCform((f) => ({ ...f, rights: e.target.checked }))}
+                  className="mt-1 h-4 w-4 accent-[#C9A227]"
+                />
+                <span className="text-sm text-chess-text-secondary leading-relaxed">
+                  {es
+                    ? 'Declaro que este aporte es propio o con derechos acreditados para su publicación, y acepto su retirada inmediata ante un aviso fundado de terceros.'
+                    : 'I declare that this contribution is my own or rights-cleared for publication, and I accept its immediate removal upon a substantiated third-party notice.'}
+                </span>
+              </label>
               <div className="md:col-span-2">
                 <button type="submit" disabled={cstatus === 'sending'} className="btn-primary disabled:opacity-50">
                   {cstatus === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}

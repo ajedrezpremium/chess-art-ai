@@ -37,6 +37,10 @@ const CONTENT = {
         h: '6. Contacto',
         p: 'Para permisos, colaboraciones o avisos de contenido escribe a chessaiagency@gmail.com o usa la página de contacto.',
       },
+      {
+        h: '7. Contenido de la comunidad',
+        p: 'Al enviar una obra declaras ser su autor o disponer de derechos para publicarla, y concedes a la plataforma licencia para exhibirla con tu crédito bajo la licencia elegida (CC0, CC BY o CC BY-SA). Las propuestas que superan los controles automáticos de originalidad y derechos se publican al instante con la insignia «Auto · en verificación»; el resto pasa a revisión humana. Ante cualquier aviso fundado de terceros, el contenido se retira en 48–72h escribiendo a chessaiagency@gmail.com. El contenido ilegal, plagiado o infractor será retirado y podrá bloquearse al remitente.',
+      },
     ],
   },
   en: {
@@ -68,6 +72,10 @@ const CONTENT = {
       {
         h: '6. Contact',
         p: 'For permissions, collaborations or content notices write to chessaiagency@gmail.com or use the contact page.',
+      },
+      {
+        h: '7. Community content',
+        p: 'By submitting a work you declare that you are its author or hold the rights to publish it, and you grant the platform a license to display it with your credit under the chosen license (CC0, CC BY or CC BY-SA). Submissions passing the automatic originality and rights checks are published instantly with the “Auto · under verification” badge; the rest go to human review. Upon any substantiated third-party notice, content is removed within 48–72h via chessaiagency@gmail.com. Illegal, plagiarized or infringing content will be removed and the sender may be blocked.',
       },
     ],
   },

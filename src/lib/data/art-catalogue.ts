@@ -556,7 +556,22 @@ w('art-175','cinema','movie',"Knight Moves","Carl Schenkel","1992","Un Gran Maes
 w('art-176','cinema','movie',"Fresh","Boaz Yakin","1994","El niño juega con su padre en el parque.",["Drama","EEUU"]),
 w('art-177','cinema','movie',"Alicia a través del espejo","James Bobin","2016","El reino vivo del ajedrez y los Reyes de Cristal.",["Fantasía","EEUU"]),
 w('art-178','cinema','series',"Doctor Who: Nightmare in Silver","BBC","2013","Ajedrez cibernético contra los Cybermen.",["Ciencia ficción","Reino Unido"]),
-w('art-179','cinema','movie',"El caso Thomas Crown","Norman Jewison","1968","Seducción sobre el tablero: McQueen y Dunaway.",["Romance","EEUU"]),
+{
+    ...w('art-179','cinema','movie',"El caso Thomas Crown","Norman Jewison","1968","McQueen y Dunaway juegan al ajedrez en la mansión: 7 minutos casi sin diálogo que terminan en beso. Jewison la rodó como «chess with sex».",["Romance","EEUU","Seducción"]),
+    titleEn: 'The Thomas Crown Affair',
+    nationality: 'Estadounidense',
+    period: 'Nuevo Hollywood',
+    country: 'EE. UU.',
+    chessRole: 'metaphor',
+    chessNote: 'Partida de seducción basada en Zeissl–von Walthoffen (Viena 1898) con set birmano de exportación cantonesa; Vicki gana y Crown propone «jugar a otra cosa». Óscar a mejor canción (Windmills of Your Mind). Parodiada en Austin Powers; el remake de 1999 no tiene escena de ajedrez.',
+    schemaCategory: 'cine_audiovisual',
+    sources: [
+      { name: 'Wikipedia EN - The Thomas Crown Affair (1968)', type: 'wikipedia', url: 'https://en.wikipedia.org/wiki/The_Thomas_Crown_Affair_(1968_film)' },
+      { name: 'Wikipedia ES - El caso Thomas Crown', type: 'wikipedia', url: 'https://es.wikipedia.org/wiki/The_Thomas_Crown_Affair_(pel%C3%ADcula_de_1968)' },
+      { name: 'AFI Catalog - The Thomas Crown Affair', type: 'academic', url: 'https://catalog.afi.com/Film/19845-THE-THOMAS-CROWN-AFFAIR' },
+      { name: 'IMDb - tt0063688', type: 'imdb', url: 'https://www.imdb.com/title/tt0063688/' },
+    ],
+  },
 w('art-180','cinema','series',"Peaky Blinders","BBC","2013-2022","Shelby mueve piezas políticas.",["Serie","Reino Unido"]),
 // ---- Fotografía II (181-190) ----
 w('art-181','art','photography',"Café de la Régence","Brassaï","años 1930","El templo parisino del ajedrez, de noche.",["Fotografía","París"]),
